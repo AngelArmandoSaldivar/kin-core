@@ -7,7 +7,6 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 const PORT = process.env.PORT || 5000;
 
-
 //app.use(cors());
 
 app.get("/", (request, response) => {
@@ -16,6 +15,56 @@ app.get("/", (request, response) => {
 
 app.get("/kin/api/v1/echoMessage", (request, response) => {
     response.send("Message Test");
+});
+
+app.post('/kin/api/v1/echoMessage', (request, response) => {    
+
+    const reqMessage = request.body;
+
+    var bodyResponse = {
+        messageId : '',
+        messageType : ''
+    }
+
+    if(reqMessage.financial_institution_id != 'SOFIPA') {
+        response.send({
+            "error": "No existe la institución"
+        });
+    }
+
+    if(reqMessage.financial_institution_id == 'SOFIPA')
+    
+        bodyResponse.messageId = reqMessage.messageId;
+        bodyResponse.messageType = reqMessage.messageType;
+        response.send(bodyResponse);
+
+});
+
+app.post('/kin/api/v1/authRequest', (request, response) => {    
+
+    const reqMessage = request.body;
+
+    var bodyResponse = {
+        messageId : '',
+        messageType : ''
+    }
+
+    // if(reqMessage.financial_institution_id != 'SOFIPA') {
+    //     response.send({
+    //         "error": "No existe la institución"
+    //     });
+    // }
+
+    if(reqMessage.financial_institution_id == 'SOFIPA') {
+        bodyResponse.messageId = reqMessage.messageId;
+        bodyResponse.messageType = "OK";
+        response.send(bodyResponse); 
+    } else {
+        bodyResponse.messageId = reqMessage.messageId;
+        bodyResponse.messageType = "CORE_BANK_DECLINED";
+        response.send(bodyResponse);
+    }
+
 });
 
 app.listen(PORT, () => {
