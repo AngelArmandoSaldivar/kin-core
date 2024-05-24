@@ -7,7 +7,7 @@ app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({ extended: true }));
 
 
-app.use(cors());
+//app.use(cors());
 
 app.listen(3001, () => {
     console.log("SUCCESS");
