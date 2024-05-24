@@ -26,17 +26,28 @@ app.post('/coreBanking/authRequest', (request, response) => {
         messageType : ''
     }
 
-    if(reqMessage.financial_institution_id != 'SOFIPA') {
-        response.send({
-            "error": "No existe la institución"
-        });
+    // if(reqMessage.financial_institution_id != 'SOFIPA') {
+    //     response.send({
+    //         "error": "No existe la institución"
+    //     });
+    // }        
+
+    if (reqMessage.financial_institution_id == 'SOFIPA' && reqMessage.messageTypeId == "ECHO") {        
+        bodyResponse.messageId = reqMessage.messageId;
+        bodyResponse.messageType = reqMessage.messageTypeId;
+        response.send(bodyResponse);
     }
 
-    if(reqMessage.financial_institution_id == 'SOFIPA')
-    
+
+    if(reqMessage.financial_institution_id == 'SOFIPA' && reqMessage.messageTypeId == "AUTH") {
         bodyResponse.messageId = reqMessage.messageId;
-        bodyResponse.messageType = reqMessage.messageType;
+        bodyResponse.messageType = "OK";
+        response.send(bodyResponse); 
+    } else {
+        bodyResponse.messageId = reqMessage.messageId;
+        bodyResponse.messageType = "CORE_BANK_DECLINED";
         response.send(bodyResponse);
+    }
 
 });
 
