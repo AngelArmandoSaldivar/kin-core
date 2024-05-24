@@ -3,14 +3,14 @@ const BodyParser = require("body-parser");
 const cors = require('cors');
 const { response } = require('express');
 const app = express()
-app.use(BodyParser.json());
-app.use(BodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 const PORT = process.env.PORT || 5000;
 
 
 //app.use(cors());
 
-app.get("", (request, response) => {
+app.get("/", (request, response) => {
     response.send("Hola mundo");
 })
 
