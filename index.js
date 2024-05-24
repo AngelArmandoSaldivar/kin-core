@@ -17,7 +17,7 @@ app.get("/kin/api/v1/echoMessage", (request, response) => {
     response.send("Message Test");
 });
 
-app.post('/kin/api/v1/echoMessage', (request, response) => {    
+app.post('/coreBanking/authRequest', (request, response) => {    
 
     const reqMessage = request.body;
 
