@@ -32,14 +32,14 @@ app.post('/coreBanking/authRequest', (request, response) => {
     //     });
     // }        
 
-    if (reqMessage.financial_institution_id == 'SOFIPA' && reqMessage.messageTypeId == "ECHO") {        
+    if (reqMessage.financial_institution_id == 'SOFIPA' && reqMessage.messageType == "ECHO") {        
         bodyResponse.messageId = reqMessage.messageId;
-        bodyResponse.messageType = reqMessage.messageTypeId;
+        bodyResponse.messageType = reqMessage.messageType;
         response.send(bodyResponse);
     }
 
 
-    if(reqMessage.financial_institution_id == 'SOFIPA' && reqMessage.messageTypeId == "AUTH") {
+    if(reqMessage.financial_institution_id == 'SOFIPA' && reqMessage.messageType == "AUTH") {
         bodyResponse.messageId = reqMessage.messageId;
         bodyResponse.messageType = "OK";
         response.send(bodyResponse); 
