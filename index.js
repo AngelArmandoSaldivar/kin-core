@@ -17,7 +17,7 @@ app.get("/kin/api/v1/echoMessage", (request, response) => {
     response.send("Message Test");
 });
 
-app.post('/coreBanking/authRequest', (request, response) => {    
+app.post('/coreBanking/AUTH', (request, response) => {    
 
     const reqMessage = request.body;
 
@@ -25,33 +25,13 @@ app.post('/coreBanking/authRequest', (request, response) => {
         messageId : '',
         messageType : ''
     }
-
-    // if(reqMessage.financial_institution_id != 'SOFIPA') {
-    //     response.send({
-    //         "error": "No existe la institución"
-    //     });
-    // }        
-
-    if (reqMessage.financial_institution_id == 'SOFIPA' && reqMessage.messageType == "ECHO") {        
-        bodyResponse.messageId = reqMessage.messageId;
-        bodyResponse.messageType = reqMessage.messageType;
-        response.send(bodyResponse);
-    }
-
-
-    if(reqMessage.financial_institution_id == 'SOFIPA' && reqMessage.messageType == "AUTH") {
-        bodyResponse.messageId = reqMessage.messageId;
-        bodyResponse.messageType = "OK";
-        response.send(bodyResponse); 
-    } else {
-        bodyResponse.messageId = reqMessage.messageId;
-        bodyResponse.messageType = "CORE_BANK_DECLINED";
-        response.send(bodyResponse);
-    }
-
+   
+    bodyResponse.messageId = reqMessage.messageId;
+    bodyResponse.messageType = reqMessage.messageType;
+    response.send(bodyResponse); 
 });
 
-app.post('/kin/api/v1/authRequest', (request, response) => {    
+app.post('/coreBanking/ADVICE', (request, response) => {    
 
     const reqMessage = request.body;
 
@@ -59,23 +39,38 @@ app.post('/kin/api/v1/authRequest', (request, response) => {
         messageId : '',
         messageType : ''
     }
+   
+    bodyResponse.messageId = reqMessage.messageId;
+    bodyResponse.messageType = reqMessage.messageType;
+    response.send(bodyResponse); 
+});
 
-    // if(reqMessage.financial_institution_id != 'SOFIPA') {
-    //     response.send({
-    //         "error": "No existe la institución"
-    //     });
-    // }
+app.post('/coreBanking/REVERSAL', (request, response) => {    
 
-    if(reqMessage.financial_institution_id == 'SOFIPA') {
-        bodyResponse.messageId = reqMessage.messageId;
-        bodyResponse.messageType = "OK";
-        response.send(bodyResponse); 
-    } else {
-        bodyResponse.messageId = reqMessage.messageId;
-        bodyResponse.messageType = "CORE_BANK_DECLINED";
-        response.send(bodyResponse);
+    const reqMessage = request.body;
+
+    var bodyResponse = {
+        messageId : '',
+        messageType : ''
     }
+   
+    bodyResponse.messageId = reqMessage.messageId;
+    bodyResponse.messageType = reqMessage.messageType;
+    response.send(bodyResponse);
+});
 
+app.post('/coreBanking/ECHO', (request, response) => {    
+
+    const reqMessage = request.body;
+
+    var bodyResponse = {
+        messageId : '',
+        messageType : ''
+    }
+   
+    bodyResponse.messageId = reqMessage.messageId;
+    bodyResponse.messageType = reqMessage.messageType;
+    response.send(bodyResponse);
 });
 
 app.listen(PORT, () => {
