@@ -23,11 +23,11 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
     var bodyResponse = {
         messageId : '',
-        messageType : ''
+        validationResponse : ''
     }
    
     bodyResponse.messageId = reqMessage.messageId;
-    bodyResponse.messageType = reqMessage.messageType;
+    bodyResponse.validationResponse = "OK";
     response.send(bodyResponse); 
 });
 
