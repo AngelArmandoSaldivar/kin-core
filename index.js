@@ -18,7 +18,6 @@ app.get("/kin/api/v1/echoMessage", (request, response) => {
 
 app.post('/coreBanking/AUTH', (request, response) => {
 
-
     request = request.body;
     var accountSettings = {
         accountId: process.env.ACCOUNT_ID,
@@ -39,22 +38,37 @@ app.post('/coreBanking/AUTH', (request, response) => {
     }
     
     //then call get, post, put, or delete
-    myInvoices.get({id: '12345'}, function(error, body)
+    myInvoices.get({id: ''}, function(error, body)
     {
-        console.log("FINANCIAL INST: " + request.financial_institution_id);
-        console.log("ACCOUBT: " + request.accountNumber);
-        console.log("billingAmount: " + request.billingAmount);
-        // response.send(body);
-        if(request.financial_institution_id != body.financial_instituto_id || request.accountNumber != body.accountNumber || request.billingAmount != body.billingAmount) {
-            messageResponse.messageId = request.messageId;
-            messageResponse.validationResponse = "CORE_BANK_DECLINED";
-            response.send(messageResponse);
-            return;
-        } else {
-            messageResponse.messageId = request.messageId;
-            messageResponse.validationResponse = "OK";
-            response.send(messageResponse);
-        }
+        // console.log("FINANCIAL INST: " + request.financial_institution_id);
+        // console.log("ACCOUBT: " + request.accountNumber);
+        // console.log("billingAmount: " + request.billingAmount);
+
+        try {
+
+            body.billingAmount = Number(body.billingAmount);
+
+            if(request.financial_institution_id != body.financial_instituto_id) {
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "FINANCIAL_INSTITUTION_NOT_FOUND";
+                response.status(404).send(messageResponse);
+            } else if(request.accountNumber != body.accountNumber) {
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "ACCOUNT_NUMBER_NOT_FOUND";
+                response.status(404).send(messageResponse);
+            } else if(request.billingAmount > body.billingAmount) {
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "INSUFFICIENT_BALANCE";
+                response.status(404).send(messageResponse);
+            } else {
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "TRANSACTION_ACCEPTED";
+                response.status(200).send(messageResponse);
+            }
+            
+        } catch (error) {
+            response.status(400).send("Error " + error);
+        }        
         
     });
 });
