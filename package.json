@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index",
+    "dev": "nodemon index"
   },
   "author": "",
   "license": "ISC",
@@ -12,8 +13,8 @@
     "axios": "1.7.2",
     "body-parser": "1.20.2",
     "cors": "2.8.5",
-    "dotenv": "16.4.5",
     "express": "4.19.2",
-    "nodemon": "3.1.0"
+    "nodemon": "3.1.0",
+    "nsrestlet": "2.0.1"
   }
 }
