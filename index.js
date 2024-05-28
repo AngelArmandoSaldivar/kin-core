@@ -98,6 +98,6 @@ app.post('/coreBanking/ECHO', (request, response) => {
     response.send(bodyResponse);
 });
 
-app.listen(port, () => {
+app.listen(process.env.PORT || 5000, () => {
     console.log(`App listening on port ${port}`);
 });
