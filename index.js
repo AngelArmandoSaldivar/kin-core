@@ -41,6 +41,9 @@ app.post('/coreBanking/AUTH', (request, response) => {
     //then call get, post, put, or delete
     myInvoices.get({id: '12345'}, function(error, body)
     {
+        console.log("FINANCIAL INST: " + request.financial_institution_id);
+        console.log("ACCOUBT: " + request.accountNumber);
+        console.log("billingAmount: " + request.billingAmount);
         // response.send(body);
         if(request.financial_institution_id != body.financial_instituto_id || request.accountNumber != body.accountNumber || request.billingAmount != body.billingAmount) {
             messageResponse.messageId = request.messageId;
