@@ -58,7 +58,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 response.status(404).send(messageResponse);
             } else if(request.billingAmount > body.billingAmount) {
                 messageResponse.messageId = request.messageId;
-                messageResponse.validationResponse = "INSUFFICIENT_BALANCE";
+                messageResponse.validationResponse = "THE_BANK_REJECTED_THE_TRANSACTION_INSUFFICIENT_FUNDS";
                 response.status(404).send(messageResponse);
             } else {
                 messageResponse.messageId = request.messageId;
