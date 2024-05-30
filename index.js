@@ -49,8 +49,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
             body.billingAmount = Number(body.billingAmount);
 
-            console.log("BILLING: " + body.billingAmount);
-            console.log("BILLING 2. " + request.billingAmount);
+            console.log("RESP: " + body);
 
             if(request.financial_institution_id != body.financial_instituto_id) {
                 messageResponse.messageId = request.messageId;
