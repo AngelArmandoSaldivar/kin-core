@@ -40,16 +40,10 @@ app.post('/coreBanking/AUTH', (request, response) => {
     
     //then call get, post, put, or delete
     myInvoices.get({id: ''}, function(error, body)
-    {
-        // console.log("FINANCIAL INST: " + request.financial_institution_id);
-        // console.log("ACCOUBT: " + request.accountNumber);
-        // console.log("billingAmount: " + request.billingAmount);
-
+    {      
         try {
 
-            body.billingAmount = Number(body.billingAmount);
-
-            console.log("BILLING: " + body.billingAmount);
+            body.billingAmount = Number(body.billingAmount);            
 
             if(request.financial_institution_id != body.financial_instituto_id) {
                 messageResponse.messageId = request.messageId;
@@ -64,8 +58,12 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 messageResponse.validationResponse = "THE_BANK_REJECTED_THE_TRANSACTION_INSUFFICIENT_FUNDS";
                 response.status(404).send(messageResponse);
             } else {
-                
-                var nuevoSaldo = body.billingAmount - request.billingAmount;                
+
+                var nuevoSaldo = body.billingAmount - request.billingAmount;
+                var numero = Number(0);
+
+                console.log("NUEVO SALDO: " + nuevoSaldo);
+                console.log(nuevoSaldo == numero ? "Uno" : "Dos");
 
                 actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo})     
                 messageResponse.messageId = request.messageId;
