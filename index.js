@@ -6,8 +6,6 @@ const port = process.env.PORT || 5000;
 require('dotenv').config();
 const nsrestlet = require('nsrestlet');
 
-//app.use(cors());
-
 var accountSettings = {
     accountId: process.env.ACCOUNT_ID,
     tokenKey: process.env.TOKEN_KEY,
