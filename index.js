@@ -49,6 +49,8 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
             body.billingAmount = Number(body.billingAmount);
 
+            console.log("BILLING: " + body.billingAmount);
+
             if(request.financial_institution_id != body.financial_instituto_id) {
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "FINANCIAL_INSTITUTION_NOT_FOUND";
@@ -65,10 +67,10 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 var nuevoSaldo = body.billingAmount - request.billingAmount;
                 var numero = Number(0);
 
-                console.log("NUEVO SALGO: " + nuevoSaldo);
+                console.log("NUEVO SALDO: " + nuevoSaldo);
                 console.log(nuevoSaldo == numero ? "Uno" : "Dos");
 
-                actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo})
+                actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo})                
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "TRANSACTION_ACCEPTED";
                 response.status(200).send(messageResponse);
