@@ -63,14 +63,13 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "THE_BANK_REJECTED_THE_TRANSACTION_INSUFFICIENT_FUNDS";
                 response.status(404).send(messageResponse);
-            } else {                
+            } else {
+
+                console.log("Resp 1: " + body.billingAmount);
+                console.log("Resp 2. " + request.billingAmount);
                 var nuevoSaldo = body.billingAmount - request.billingAmount;
-                var numero = Number(0);
 
-                console.log("NUEVO SALDO: " + nuevoSaldo);
-                console.log(nuevoSaldo == numero ? "Uno" : "Dos");
-
-                actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo})                
+                actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo})     
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "TRANSACTION_ACCEPTED";
                 response.status(200).send(messageResponse);
