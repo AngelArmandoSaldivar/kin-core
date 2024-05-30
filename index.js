@@ -6,6 +6,8 @@ const port = process.env.PORT || 5000;
 require('dotenv').config();
 const nsrestlet = require('nsrestlet');
 
+//app.use(cors());
+
 var accountSettings = {
     accountId: process.env.ACCOUNT_ID,
     tokenKey: process.env.TOKEN_KEY,
@@ -47,8 +49,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
             body.billingAmount = Number(body.billingAmount);
 
-            console.log("RESP: " + JSON.stringify(body));
-            console.log("ID: " + process.env.ACCOUNT_ID);
+            console.log("BILLING: " + body.billingAmount);
 
             if(request.financial_institution_id != body.financial_instituto_id) {
                 messageResponse.messageId = request.messageId;
@@ -63,10 +64,8 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 messageResponse.validationResponse = "THE_BANK_REJECTED_THE_TRANSACTION_INSUFFICIENT_FUNDS";
                 response.status(404).send(messageResponse);
             } else {
-
-                console.log("Resp 1: " + body.billingAmount);
-                console.log("Resp 2. " + request.billingAmount);
-                var nuevoSaldo = body.billingAmount - request.billingAmount;
+                
+                var nuevoSaldo = body.billingAmount - request.billingAmount;                
 
                 actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo})     
                 messageResponse.messageId = request.messageId;
