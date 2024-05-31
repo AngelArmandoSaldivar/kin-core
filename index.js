@@ -67,7 +67,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
                 actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo})     
                 messageResponse.messageId = request.messageId;
-                messageResponse.validationResponse = "TRANSACTION_ACCEPTED";
+                messageResponse.validationResponse = "OK";
                 response.status(200).send(messageResponse);
             }
             
