@@ -39,7 +39,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
     }
     
     //then call get, post, put, or delete
-    myInvoices.get({id: ''}, function(error, body)
+    myInvoices.get({type: 'AUTH'}, function(error, body)
     {      
         try {
 
@@ -65,7 +65,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 console.log("NUEVO SALDO: " + nuevoSaldo);
                 console.log(nuevoSaldo == numero ? "Uno" : "Dos");
 
-                actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo})     
+                actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, type: 'AUTH'});
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "OK";
                 response.status(200).send(messageResponse);
@@ -78,6 +78,55 @@ app.post('/coreBanking/AUTH', (request, response) => {
     });
 });
 
+app.post('/coreBanking/REVERSAL', (request, response) => {
+
+    request = request.body;   
+
+    var messageResponse = {
+        messageId: '',
+        validationResponse:''
+    }
+    
+    //then call get, post, put, or delete
+    myInvoices.get({type: 'REVERSAL'}, function(error, body)
+    {      
+        try {
+
+            body.billingAmount = Number(body.billingAmount);            
+
+            if(request.financial_institution_id != body.financial_instituto_id) {
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "FINANCIAL_INSTITUTION_NOT_FOUND";
+                response.status(404).send(messageResponse);
+            } else if(request.accountNumber != body.accountNumber) {
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "ACCOUNT_NUMBER_NOT_FOUND";
+                response.status(404).send(messageResponse);
+            // else if(request.billingAmount > body.billingAmount) {
+            //     messageResponse.messageId = request.messageId;
+            //     messageResponse.validationResponse = "THE_BANK_REJECTED_THE_TRANSACTION_INSUFFICIENT_FUNDS";
+            //     response.status(404).send(messageResponse);
+            } else {
+
+                var nuevoSaldo = body.billingAmount + request.originalTxnAmount;
+                var numero = Number(0);
+
+                console.log("NUEVO SALDO: " + nuevoSaldo);
+                console.log(nuevoSaldo == numero ? "Uno" : "Dos");
+
+                actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo, type: 'REVERSAL'})
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "OK";
+                response.status(200).send(messageResponse);
+            }
+            
+        } catch (error) {
+            response.status(400).send("Error " + error);
+        }        
+        
+    });
+
+});
 
 function actualizarSaldo(nuevoSaldo) {
 
@@ -91,7 +140,6 @@ function actualizarSaldo(nuevoSaldo) {
     });
 }
 
-
 app.post('/coreBanking/ADVICE', (request, response) => {    
 
     const reqMessage = request.body;
@@ -104,20 +152,6 @@ app.post('/coreBanking/ADVICE', (request, response) => {
     bodyResponse.messageId = reqMessage.messageId;
     bodyResponse.messageType = reqMessage.messageType;
     response.send(bodyResponse); 
-});
-
-app.post('/coreBanking/REVERSAL', (request, response) => {    
-
-    const reqMessage = request.body;
-
-    var bodyResponse = {
-        messageId : '',
-        messageType : ''
-    }
-   
-    bodyResponse.messageId = reqMessage.messageId;
-    bodyResponse.messageType = reqMessage.messageType;
-    response.send(bodyResponse);
 });
 
 app.post('/coreBanking/ECHO', (request, response) => {    
