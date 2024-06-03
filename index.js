@@ -47,15 +47,16 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
             if(request.financial_institution_id != body.financial_instituto_id) {
                 messageResponse.messageId = request.messageId;
-                messageResponse.validationResponse = "FINANCIAL_INSTITUTION_NOT_FOUND";
+                messageResponse.validationResponse = "CORE_BANK_DECLINED";
                 response.status(404).send(messageResponse);
             } else if(request.accountNumber != body.accountNumber) {
                 messageResponse.messageId = request.messageId;
-                messageResponse.validationResponse = "ACCOUNT_NUMBER_NOT_FOUND";
+                messageResponse.validationResponse = "CORE_BANK_DECLINED";
                 response.status(404).send(messageResponse);
             } else if(request.billingAmount > body.billingAmount) {
                 messageResponse.messageId = request.messageId;
-                messageResponse.validationResponse = "THE_BANK_REJECTED_THE_TRANSACTION_INSUFFICIENT_FUNDS";
+                //messageResponse.validationResponse = "THE_BANK_REJECTED_THE_TRANSACTION_INSUFFICIENT_FUNDS";
+                messageResponse.validationResponse = "CORE_BANK_DECLINED";
                 response.status(404).send(messageResponse);
             } else {
 
@@ -96,11 +97,11 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
 
             if(request.financial_institution_id != body.financial_instituto_id) {
                 messageResponse.messageId = request.messageId;
-                messageResponse.validationResponse = "FINANCIAL_INSTITUTION_NOT_FOUND";
+                messageResponse.validationResponse = "CORE_BANK_DECLINED";
                 response.status(404).send(messageResponse);
             } else if(request.accountNumber != body.accountNumber) {
                 messageResponse.messageId = request.messageId;
-                messageResponse.validationResponse = "ACCOUNT_NUMBER_NOT_FOUND";
+                messageResponse.validationResponse = "CORE_BANK_DECLINED";
                 response.status(404).send(messageResponse);
             // else if(request.billingAmount > body.billingAmount) {
             //     messageResponse.messageId = request.messageId;
