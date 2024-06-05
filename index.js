@@ -143,39 +143,52 @@ function actualizarSaldo(nuevoSaldo) {
 
 app.post('/coreBanking/ADVICE', (request, response) => {    
 
-    try {
+    request = request.body;   
 
-        body.billingAmount = Number(body.billingAmount);            
+    var messageResponse = {
+        messageId: '',
+        validationResponse:''
+    }
+    
+    //then call get, post, put, or delete
+    myInvoices.get({type: 'REVERSAL'}, function(error, body)
+    {      
+        try {
 
-        if(request.financial_institution_id != body.financial_instituto_id) {
-            messageResponse.messageId = request.messageId;
-            messageResponse.validationResponse = "CORE_BANK_DECLINED";
-            response.status(404).send(messageResponse);
-        } else if(request.accountNumber != body.accountNumber) {
-            messageResponse.messageId = request.messageId;
-            messageResponse.validationResponse = "CORE_BANK_DECLINED";
-            response.status(404).send(messageResponse);
-        // else if(request.billingAmount > body.billingAmount) {
-        //     messageResponse.messageId = request.messageId;
-        //     messageResponse.validationResponse = "THE_BANK_REJECTED_THE_TRANSACTION_INSUFFICIENT_FUNDS";
-        //     response.status(404).send(messageResponse);
-        } else {
+            body.billingAmount = Number(body.billingAmount);            
 
-            var nuevoSaldo = body.billingAmount + request.originalTxnAmount;
-            var numero = Number(0);
+            if(request.financial_institution_id != body.financial_instituto_id) {
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "CORE_BANK_DECLINED";
+                response.status(404).send(messageResponse);
+            } else if(request.accountNumber != body.accountNumber) {
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "CORE_BANK_DECLINED";
+                response.status(404).send(messageResponse);
+            // else if(request.billingAmount > body.billingAmount) {
+            //     messageResponse.messageId = request.messageId;
+            //     messageResponse.validationResponse = "THE_BANK_REJECTED_THE_TRANSACTION_INSUFFICIENT_FUNDS";
+            //     response.status(404).send(messageResponse);
+            } else {
 
-            console.log("NUEVO SALDO: " + nuevoSaldo);
-            console.log(nuevoSaldo == numero ? "Uno" : "Dos");
+                var nuevoSaldo = body.billingAmount + request.originalTxnAmount;
+                var numero = Number(0);
 
-            actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo, type: 'REVERSAL'})
-            messageResponse.messageId = request.messageId;
-            messageResponse.validationResponse = "OK";
-            response.status(200).send(messageResponse);
-        }
-        
+                console.log("NUEVO SALDO: " + nuevoSaldo);
+                console.log(nuevoSaldo == numero ? "Uno" : "Dos");
+
+                actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo, type: 'REVERSAL'})
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "OK";
+                response.status(200).send(messageResponse);
+            }
+            
         } catch (error) {
             response.status(400).send("Error " + error);
-        }    
+        }        
+        
+    });
+    
 });
 
 app.post('/coreBanking/ECHO', (request, response) => {    
