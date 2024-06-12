@@ -66,7 +66,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
                 response.status(200).send(messageResponse);
             // } else if(request.billingAmount > body.billingAmount) {
-            } else if(request.billingAmount > body.memoDebitAmount) {
+            } else if(request.billingAmount > body.billingAmount) {
 
                 messageResponse.messageId = request.messageId;
                 messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
@@ -77,7 +77,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 response.status(200).send(messageResponse);
             } else {
 
-                var nuevoSaldo = body.memoDebitAmount - request.billingAmount;
+                var nuevoSaldo = body.billingAmount - request.billingAmount;
                 var numero = Number(0);
 
                 console.log("NUEVO SALDO: " + nuevoSaldo);
@@ -86,7 +86,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, type: 'AUTH'});
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "OK";
-                messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo;
                 messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = nuevoSaldo;
                 messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
                 response.status(200).send(messageResponse);
@@ -139,22 +139,22 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 response.status(200).send(messageResponse);           
             } else {                
 
-                var nuevoSaldo = body.memoDebitAmount + request.originalTxnAmount;
+                var nuevoSaldo = body.billingAmount + request.originalTxnAmount;
                 var numero = Number(0)
 
                 if(nuevoSaldo <= body.billingAmount) {
                     actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo, type: 'REVERSAL'})
                     messageResponse.messageId = request.messageId;
                     messageResponse.validationResponse = "OK";
-                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = nuevoSaldo;
+                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo;
+                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
                     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
                     response.status(200).send(messageResponse);
                 } else {
                     messageResponse.messageId = request.messageId;
                     messageResponse.validationResponse = "OK";
                     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.billingAmount;
+                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
                     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
                     response.status(200).send(messageResponse);
                 }
@@ -201,7 +201,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
     myInvoices.get({type: 'REVERSAL'}, function(error, body)
     {      
         try {
-            
+
             body.billingAmount = Number(body.billingAmount);
             request.originalTxnAmount = Number(request.originalTxnAmount);
             body.memoDebitAmount = Number(body.memoDebitAmount);
@@ -222,7 +222,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                 response.status(200).send(messageResponse);           
             } else {                
 
-                var nuevoSaldo = body.memoDebitAmount + request.originalTxnAmount;
+                var nuevoSaldo = body.billingAmount + request.originalTxnAmount;
                 var numero = Number(0)
 
                 if(nuevoSaldo <= body.billingAmount) {
@@ -230,7 +230,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                     messageResponse.messageId = request.messageId;
                     messageResponse.validationResponse = "OK";
                     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = nuevoSaldo;
+                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
                     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
                     response.status(200).send(messageResponse);
                 } else {
