@@ -49,7 +49,9 @@ app.post('/coreBanking/AUTH', (request, response) => {
     {      
         try {
 
-            body.billingAmount = Number(body.billingAmount);            
+            body.billingAmount = Number(body.billingAmount);
+
+            console.log("REQUEST BILLING AMOUNT: " + request.billingAmount);
 
             if(request.financial_institution_id != body.financial_instituto_id) {
                 messageResponse.messageId = request.messageId;
@@ -67,7 +69,6 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 response.status(200).send(messageResponse);
             // } else if(request.billingAmount > body.billingAmount) {
             } else if(request.billingAmount > body.billingAmount) {
-
                 messageResponse.messageId = request.messageId;
                 messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
                 messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
