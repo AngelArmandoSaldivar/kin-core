@@ -164,7 +164,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
 
     console.log("ENTRASTE A REVERSAL");
 
-    request = request.body;   
+    request = request.body;
 
     var messageResponse = {
         messageId: '',
@@ -194,7 +194,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
     {      
         try {
 
-            console.log("BODY REQUEST: " + request.originalTxnAmount);
+            console.log("BODY REQUEST: " + request);
             
             body.billingAmount = Number(body.billingAmount);
             request.originalTxnAmount = Number(request.originalTxnAmount);
