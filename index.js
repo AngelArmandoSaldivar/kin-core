@@ -188,6 +188,8 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
             CORE_BANK_DEC_REASON_CODE: 0
         }
     }
+
+    console.log("ORIGINAL AMOUNT: " + request.originalTxnAmount);
     
     //then call get, post, put, or delete
     myInvoices.get({type: 'REVERSAL'}, function(error, body)
@@ -195,6 +197,8 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
         try {
 
             console.log("BODY REQUEST: " + request);
+            var nuevoSaldo = body.billingAmount + request.originalTxnAmount;
+            console.log("NUEVO SALDO: " + nuevoSaldo);
             
             body.billingAmount = Number(body.billingAmount);
             request.originalTxnAmount = Number(request.originalTxnAmount);
@@ -343,7 +347,9 @@ app.post('/coreBanking/ADVICE', (request, response) => {
             request.originalTxnAmount = Number(request.originalTxnAmount);
             body.memoDebitAmount = Number(body.memoDebitAmount);
 
-            var estatusCuenta = body.estatusCuenta;
+            var estatusCuenta = body.estatusCuenta;                        
+
+            return;
 
             if(estatusCuenta == "Bloqueada") {
                 messageResponse.messageId = request.messageId;
@@ -412,7 +418,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                 messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
                 messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
                 messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                response.status(200).send(messageResponse);           
+                response.status(200).send(messageResponse);
             } else {                
 
                 var nuevoSaldo = body.billingAmount + request.originalTxnAmount;
