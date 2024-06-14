@@ -162,6 +162,8 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
 app.post('/coreBanking/REVERSAL', (request, response) => {
 
+    console.log("ENTRASTE A REVERSAL");
+
     request = request.body;   
 
     var messageResponse = {
