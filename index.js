@@ -191,6 +191,8 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
     myInvoices.get({type: 'REVERSAL'}, function(error, body)
     {      
         try {
+
+            console.log("BODY REQUEST: " + request.originalTxnAmount);
             
             body.billingAmount = Number(body.billingAmount);
             request.originalTxnAmount = Number(request.originalTxnAmount);
@@ -261,7 +263,9 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 var nuevoSaldo = body.billingAmount + request.originalTxnAmount;
                 var numero = Number(0)
 
-                if(nuevoSaldo <= body.billingAmount) {
+                console.log("NUEVO SALDO: " + nuevoSaldo);
+
+                // if(nuevoSaldo <= body.billingAmount) {
                     actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo, type: 'REVERSAL'})
                     messageResponse.messageId = request.messageId;
                     messageResponse.validationResponse = "OK";
@@ -269,17 +273,17 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
                     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
                     response.status(200).send(messageResponse);
-                } else {
-                    messageResponse.messageId = request.messageId;
-                    messageResponse.validationResponse = "OK";
-                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
-                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                    response.status(200).send(messageResponse);
-                }
+                // } else {
+                //     messageResponse.messageId = request.messageId;
+                //     messageResponse.validationResponse = "OK";
+                //     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                //     messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                //     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                //     response.status(200).send(messageResponse);
+                // }
 
                 // console.log("NUEVO SALDO: " + nuevoSaldo);
-                // console.log(nuevoSaldo == numero ? "Uno" : "Dos")                
+                // console.log(nuevoSaldo == numero ? "Uno" : "Dos")
             }
             
         } catch (error) {
