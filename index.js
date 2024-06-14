@@ -196,7 +196,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
     {      
         try {
 
-            console.log("BODY REQUEST: " + request);
+            console.log("BODY REQUEST: " + JSON.stringify(request));
             var nuevoSaldo = body.billingAmount + request.originalTxnAmount;
             console.log("NUEVO SALDO: " + nuevoSaldo);
             
