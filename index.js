@@ -43,6 +43,18 @@ app.post('/coreBanking/AUTH', (request, response) => {
             ACCT_BLOCK_CODE: 0
         }
     }
+
+    var messageResponse2 = {
+        messageId: '',
+        validationResponse:'',
+        serviceResponseFields: {
+            ACCOUNT_BALANCE: 0,
+            MEMO_DEBIT_AMOUNT: 0,
+            MEMO_CREDIT_AMOUNT: 0,
+            ACCT_BLOCK_CODE: 0,
+            CORE_BANK_DEC_REASON_CODE: 0
+        }
+    }
     
     //then call get, post, put, or delete
     myInvoices.get({type: 'AUTH'}, function(error, body)
@@ -53,19 +65,67 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
             console.log("REQUEST BILLING AMOUNT: " + request.billingAmount);
 
+            var estatusCuenta = body.estatusCuenta;
+
+            if(estatusCuenta == "Pickup") {
+                messageResponse2.messageId = request.messageId;
+                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 2
+                response.status(200).send(messageResponse2);
+            }
+
+            if(estatusCuenta == "Fraude") {
+                messageResponse2.messageId = request.messageId;
+                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 3;
+                response.status(200).send(messageResponse2);
+            }
+
+            if(estatusCuenta == "Sospecha Fraude") {
+                messageResponse2.messageId = request.messageId;
+                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 4;
+                response.status(200).send(messageResponse2);
+            }
+
+             if(estatusCuenta == "Temporal") {
+                messageResponse2.messageId = request.messageId;
+                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 5
+                response.status(200).send(messageResponse2);
+            }
+
             if(request.financial_institution_id != body.financial_instituto_id) {
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "CORE_BANK_DECLINED";
                 messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
                 messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
                 messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse.serviceResponseFields.ACCT_BLOCK_CODE = 1;
                 response.status(200).send(messageResponse);
             } else if(request.accountNumber != body.accountNumber) {
-                messageResponse.messageId = request.messageId;                
+                messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "CORE_BANK_DECLINED";
                 messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
                 messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
                 messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse.serviceResponseFields.ACCT_BLOCK_CODE = 1;
                 response.status(200).send(messageResponse);
             // } else if(request.billingAmount > body.billingAmount) {
             } else if(request.billingAmount > body.billingAmount) {
@@ -114,6 +174,18 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
             ACCT_BLOCK_CODE: 0
         }
     }
+
+    var messageResponse2 = {
+        messageId: '',
+        validationResponse:'',
+        serviceResponseFields: {
+            ACCOUNT_BALANCE: 0,
+            MEMO_DEBIT_AMOUNT: 0,
+            MEMO_CREDIT_AMOUNT: 0,
+            ACCT_BLOCK_CODE: 0,
+            CORE_BANK_DEC_REASON_CODE: 0
+        }
+    }
     
     //then call get, post, put, or delete
     myInvoices.get({type: 'REVERSAL'}, function(error, body)
@@ -123,6 +195,52 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
             body.billingAmount = Number(body.billingAmount);
             request.originalTxnAmount = Number(request.originalTxnAmount);
             body.memoDebitAmount = Number(body.memoDebitAmount);
+
+            var estatusCuenta = body.estatusCuenta;
+
+            if(estatusCuenta == "Pickup") {
+                messageResponse2.messageId = request.messageId;
+                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 2
+                response.status(200).send(messageResponse2);
+            }
+
+            if(estatusCuenta == "Fraude") {
+                messageResponse2.messageId = request.messageId;
+                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 3;
+                response.status(200).send(messageResponse2);
+            }
+
+            if(estatusCuenta == "Sospecha Fraude") {
+                messageResponse2.messageId = request.messageId;
+                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 4;
+                response.status(200).send(messageResponse2);
+            }
+
+             if(estatusCuenta == "Temporal") {
+                messageResponse2.messageId = request.messageId;
+                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 5
+                response.status(200).send(messageResponse2);
+            }
             
             if(request.financial_institution_id != body.financial_instituto_id) {
                 messageResponse.messageId = request.messageId;
@@ -199,6 +317,18 @@ app.post('/coreBanking/ADVICE', (request, response) => {
         }
     }
 
+    var messageResponse2 = {
+        messageId: '',
+        validationResponse:'',
+        serviceResponseFields: {
+            ACCOUNT_BALANCE: 0,
+            MEMO_DEBIT_AMOUNT: 0,
+            MEMO_CREDIT_AMOUNT: 0,
+            ACCT_BLOCK_CODE: 0,
+            CORE_BANK_DEC_REASON_CODE: 0
+        }
+    }
+
     myInvoices.get({type: 'REVERSAL'}, function(error, body)
     {      
         try {
@@ -206,6 +336,62 @@ app.post('/coreBanking/ADVICE', (request, response) => {
             body.billingAmount = Number(body.billingAmount);
             request.originalTxnAmount = Number(request.originalTxnAmount);
             body.memoDebitAmount = Number(body.memoDebitAmount);
+
+            var estatusCuenta = body.estatusCuenta;
+
+            if(estatusCuenta == "Bloqueada") {
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "BLK";
+                messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+                response.status(200).send(messageResponse);
+            }
+
+            if(estatusCuenta == "Pickup") {
+                messageResponse2.messageId = request.messageId;
+                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 2
+                response.status(200).send(messageResponse2);
+            }
+
+            if(estatusCuenta == "Fraude") {
+                messageResponse2.messageId = request.messageId;
+                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 3;
+                response.status(200).send(messageResponse2);
+            }
+
+            if(estatusCuenta == "Sospecha Fraude") {
+                messageResponse2.messageId = request.messageId;
+                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 4;
+                response.status(200).send(messageResponse2);
+            }
+
+             if(estatusCuenta == "Temporal") {
+                messageResponse2.messageId = request.messageId;
+                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 5
+                response.status(200).send(messageResponse2);
+            }
             
             if(request.financial_institution_id != body.financial_instituto_id) {
                 messageResponse.messageId = request.messageId;
