@@ -204,6 +204,8 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
             request.originalTxnAmount = Number(request.originalTxnAmount);
             body.memoDebitAmount = Number(body.memoDebitAmount);
 
+            console.log("ORIGINAL AMMOUNT: " + request.originalTxnAmount);
+
             var estatusCuenta = body.estatusCuenta;
 
             if(estatusCuenta == "Pickup") {
