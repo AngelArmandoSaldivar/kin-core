@@ -167,8 +167,9 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo;
                 messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = nuevoSaldo;
                 messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                response.status(200).send("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                //response.status(200).send(messageResponse);
+                //response.status(200).send("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                response.status(200).send(messageResponse);
             }
             
         } catch (error) {
@@ -301,8 +302,9 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo;
                     messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
                     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                    response.status(200).send("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                    //response.status(200).send(messageResponse);
+                    //response.status(200).send("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                    console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                    response.status(200).send(messageResponse);
                 // } else {
                 //     messageResponse.messageId = request.messageId;
                 //     messageResponse.validationResponse = "OK";
