@@ -21,6 +21,21 @@ var urlSettings = {
 //create a link
 var myInvoices = nsrestlet.createLink(accountSettings, urlSettings);
 
+app.get('/coreBanking/RESPONSE_TIME', (req, res) => {    
+
+    const startHrTime = process.hrtime();
+
+    setTimeout(() => {
+        res.send(`Response Time: ${calculoTiempoRespuesta(startHrTime)} ms`)        
+    }, 1000);
+});
+
+function calculoTiempoRespuesta(startHrTime) {
+    const elapsedHrTime = process.hrtime(startHrTime);
+    const elapsedTimeInMs = elapsedHrTime[0] * 1000 + elapsedHrTime[1] / 1e6;
+    return elapsedTimeInMs.toFixed(3);
+}
+
 app.get("/", (request, response) => {
     response.send("Hola mundo");
 })
@@ -30,6 +45,8 @@ app.get("/kin/api/v1/echoMessage", (request, response) => {
 });
 
 app.post('/coreBanking/AUTH', (request, response) => {
+    
+    const startHrTime = process.hrtime();
 
     request = request.body;   
 
@@ -150,7 +167,8 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo;
                 messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = nuevoSaldo;
                 messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                response.status(200).send(messageResponse);
+                response.status(200).send("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                //response.status(200).send(messageResponse);
             }
             
         } catch (error) {
@@ -162,7 +180,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
 app.post('/coreBanking/REVERSAL', (request, response) => {
 
-    console.log("ENTRASTE A REVERSAL");
+    const startHrTime = process.hrtime();
 
     request = request.body;
 
@@ -283,7 +301,8 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo;
                     messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
                     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                    response.status(200).send(messageResponse);
+                    response.status(200).send("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                    //response.status(200).send(messageResponse);
                 // } else {
                 //     messageResponse.messageId = request.messageId;
                 //     messageResponse.validationResponse = "OK";
@@ -319,6 +338,8 @@ function actualizarSaldo(nuevoSaldo) {
 
 app.post('/coreBanking/ADVICE', (request, response) => {    
 
+    const startHrTime = process.hrtime();
+
     request = request.body;   
 
     var messageResponse = {
@@ -352,7 +373,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
             request.originalTxnAmount = Number(request.originalTxnAmount);
             body.memoDebitAmount = Number(body.memoDebitAmount);
 
-            var estatusCuenta = body.estatusCuenta;                        
+            var estatusCuenta = body.estatusCuenta;
 
             return;
 
@@ -443,7 +464,8 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
                     messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.billingAmount;
                     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                    response.status(200).send(messageResponse);
+                    response.status(200).send("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                    //response.status(200).send(messageResponse);
                 }
 
                 // console.log("NUEVO SALDO: " + nuevoSaldo);
