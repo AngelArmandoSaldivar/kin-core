@@ -187,6 +187,8 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
 app.post('/coreBanking/REVERSAL', (request, response) => {
 
+    console.log("ENTRASTE A REVERSAL");
+
     const startHrTime = process.hrtime();
 
     request = request.body;
