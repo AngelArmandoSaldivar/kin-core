@@ -234,8 +234,8 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
         try {
 
             console.log("BODY REQUEST: " + JSON.stringify(request));
-            var nuevoSaldo = body.billingAmount + request.originalTxnAmount;
-            console.log("NUEVO SALDO: " + nuevoSaldo);
+            //var nuevoSaldo = body.billingAmount + request.originalTxnAmount;
+            //console.log("NUEVO SALDO: " + nuevoSaldo);
             
             console.log("ORIGINAL AMMOUNT: " + request.originalTxnAmount);
             console.log("BILLING AMMOUNT: " + request.billingAmount);
@@ -309,6 +309,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 response.status(200).send(messageResponse);           
             } else {                
 
+                console.log("BODY BILLING NETSUITE: " + body.billingAmount);
                 var nuevoSaldo = body.billingAmount + request.billingAmount;
                 //var numero = Number(0)
 
