@@ -91,6 +91,17 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
             var estatusCuenta = body.estatusCuenta;
 
+            if(request.billingCurrencyNode == 2) {
+                request.billingAmount = request.billingAmount / 100;
+            }
+            if(request.billingCurrencyNode == 1) {
+                request.billingAmount = request.billingAmount / 10;
+            }
+
+            if(request.billingCurrencyNode == 0) {
+                request.billingAmount = request.billingAmount / 1;
+            }
+
             if(estatusCuenta == "Pickup") {
                 messageResponse2.messageId = request.messageId;
                 messageResponse2.validationResponse = "CORE_BANK_DECLINED";
@@ -163,17 +174,17 @@ app.post('/coreBanking/AUTH', (request, response) => {
             } else {
 
                 console.log("SALDO NETSUITE: " + body.billingAmount);
-                console.log("BILLING AMOUNT ZIMBLE: : " + request.billingAmount);
-             
-                var nuevoSaldo = body.billingAmount - request.billingAmount;                
+                console.log("BILLING AMOUNT ZIMBLE: : " + request.billingAmount);                
+
+                var nuevoSaldo = body.billingAmount - request.billingAmount;
 
                 console.log("NUEVO SALDO AUTH: " + nuevoSaldo);
-                console.log("CONVERSION SALDO: " + nuevoSaldo/10);
 
                 actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, type: 'AUTH'});
+
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "OK";
-                messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo.toString()
+                messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo.toFixed(2).toString()
                 messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount.toString();
                 messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount.toString();
                 console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
@@ -229,7 +240,9 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
     console.log("ORIGINAL AMOUNT: " + request.billingAmount);
     
     //then call get, post, put, or delete
-    myInvoices2.get({type: 'REVERSAL'}, function(error, body)
+
+    setTimeout(() => {
+        myInvoices2.get({type: 'REVERSAL'}, function(error, body)
     {      
         try {
 
@@ -244,6 +257,21 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
             request.originalTxnAmount = Number(request.originalTxnAmount);
             request.billingAmount = Number(request.billingAmount);
             body.memoDebitAmount = Number(body.memoDebitAmount);
+
+            
+            if(request.billingCurrencyNode == 2) {
+                console.log("ENTRASTE");
+                request.billingAmount = request.billingAmount / 100;
+            }
+            if(request.billingCurrencyNode == 1) {
+                request.billingAmount = request.billingAmount / 10;
+            }
+
+            if(request.billingCurrencyNode == 0) {
+                request.billingAmount = request.billingAmount / 1;
+            }
+
+
 
             console.log("REQUEST AMMOUNT: " + request.billingAmount);
 
@@ -307,43 +335,40 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
                 messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
                 response.status(200).send(messageResponse);           
-            } else {                
-
+            } else {
                 console.log("BODY BILLING NETSUITE: " + body.billingAmount);
                 var nuevoSaldo = body.billingAmount + request.billingAmount;
-                //var numero = Number(0)
 
-                console.log("NUEVO SALDO REVERSAL: " + nuevoSaldo);
+                console.log("NUEVO SALDO: " + nuevoSaldo + "/////" + "Saldo: " + body.memoDebitAmount);
+                console.log(nuevoSaldo < body.memoDebitAmount ? "Si es menor": "No es menor");                
 
-                // if(nuevoSaldo <= body.billingAmount) {
-                    actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo, type: 'REVERSAL'})
+                if (nuevoSaldo <= body.memoDebitAmount) {
+                    actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo, type: 'REVERSAL'})
                     messageResponse.messageId = request.messageId;
                     messageResponse.validationResponse = "OK";
-                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo;
-                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
-                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                    //response.status(200).send("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo.toFixed(2).toString();                    
+                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount.toFixed(2).toString();
+                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount.toString();                    
                     console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                     console.log("==========FINAL A REVERSAL==============");
                     response.status(200).send(messageResponse);
-                // } else {
-                //     messageResponse.messageId = request.messageId;
-                //     messageResponse.validationResponse = "OK";
-                //     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-                //     messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
-                //     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                //     response.status(200).send(messageResponse);
-                // }
-
-                // console.log("NUEVO SALDO: " + nuevoSaldo);
-                // console.log(nuevoSaldo == numero ? "Uno" : "Dos")
+                } else {
+                    messageResponse.messageId = request.messageId;
+                    messageResponse.validationResponse = "OK";
+                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount.toFixed(2).toString();
+                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount.toFixed(2).toString();
+                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount.toString();
+                    console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                    console.log("==========FINAL A REVERSAL==============");
+                    response.status(200).send(messageResponse);               
+                }
             }
             
         } catch (error) {
             response.status(400).send("Error " + error);
-        }        
-        
+        }
     });
+    }, 1000);
 
 });
 
