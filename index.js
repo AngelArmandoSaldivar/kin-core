@@ -242,9 +242,10 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
 
             body.billingAmount = Number(body.billingAmount);            
             request.originalTxnAmount = Number(request.originalTxnAmount);
+            request.billingAmount = Number(request.billingAmount);
             body.memoDebitAmount = Number(body.memoDebitAmount);
 
-            console.log("ORIGINAL AMMOUNT: " + request.originalTxnAmount);
+            console.log("REQUEST AMMOUNT: " + request.billingAmount);
 
             var estatusCuenta = body.estatusCuenta;
 
