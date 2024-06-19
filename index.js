@@ -168,7 +168,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 console.log("NUEVO SALDO: " + nuevoSaldo);
                 console.log("CONVERSION SALDO: " + nuevoSaldo/10);
 
-                actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, type: 'AUTH'});
+                actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, type: 'AUTH'});
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "OK";
                 messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo.toString()
