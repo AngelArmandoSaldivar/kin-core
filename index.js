@@ -45,6 +45,8 @@ app.get("/kin/api/v1/echoMessage", (request, response) => {
 });
 
 app.post('/coreBanking/AUTH', (request, response) => {    
+
+    console.log("==========ENTRASTE A AUTH==============");
     
     const startHrTime = process.hrtime();
 
@@ -165,7 +167,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
              
                 var nuevoSaldo = body.billingAmount - request.billingAmount;                
 
-                console.log("NUEVO SALDO: " + nuevoSaldo);
+                console.log("NUEVO SALDO AUTH: " + nuevoSaldo);
                 console.log("CONVERSION SALDO: " + nuevoSaldo/10);
 
                 actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, type: 'AUTH'});
@@ -175,6 +177,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount.toString();
                 messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount.toString();
                 console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                console.log("==========FINAL A AUTH==============");
                 response.status(200).send(messageResponse);
             }
             
@@ -186,8 +189,8 @@ app.post('/coreBanking/AUTH', (request, response) => {
 });
 
 app.post('/coreBanking/REVERSAL', (request, response) => {
-
-    console.log("ENTRASTE A REVERSAL");
+    
+    console.log("==========ENTRASTE A REVERSAL==============");
 
     const startHrTime = process.hrtime();
 
@@ -223,7 +226,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
         }
     }
 
-    console.log("ORIGINAL AMOUNT: " + request.originalTxnAmount);
+    console.log("ORIGINAL AMOUNT: " + request.billingAmount);
     
     //then call get, post, put, or delete
     myInvoices2.get({type: 'REVERSAL'}, function(error, body)
@@ -305,10 +308,10 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 response.status(200).send(messageResponse);           
             } else {                
 
-                var nuevoSaldo = body.billingAmount + request.originalTxnAmount;
-                var numero = Number(0)
+                var nuevoSaldo = body.billingAmount + request.billingAmount;
+                //var numero = Number(0)
 
-                console.log("NUEVO SALDO: " + nuevoSaldo);
+                console.log("NUEVO SALDO REVERSAL: " + nuevoSaldo);
 
                 // if(nuevoSaldo <= body.billingAmount) {
                     actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo, type: 'REVERSAL'})
@@ -319,6 +322,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
                     //response.status(200).send("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                     console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                    console.log("==========FINAL A REVERSAL==============");
                     response.status(200).send(messageResponse);
                 // } else {
                 //     messageResponse.messageId = request.messageId;
