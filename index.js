@@ -44,11 +44,18 @@ app.get("/kin/api/v1/echoMessage", (request, response) => {
     response.send("Message Test");
 });
 
-app.post('/coreBanking/AUTH', (request, response) => {
+app.post('/coreBanking/AUTH', (request, response) => {    
     
     const startHrTime = process.hrtime();
 
-    request = request.body;   
+    request = request.body;
+
+    var urlSettings2 = {
+        url: process.env.URL + "&acctNumber=" + request.accountNumber
+    }
+    
+    //create a link
+    var myInvoices2 = nsrestlet.createLink(accountSettings, urlSettings2);
 
     var messageResponse = {
         messageId: '',
@@ -74,13 +81,11 @@ app.post('/coreBanking/AUTH', (request, response) => {
     }
     
     //then call get, post, put, or delete
-    myInvoices.get({type: 'AUTH'}, function(error, body)
+    myInvoices2.get({type: 'AUTH'}, function(error, body)
     {      
-        try {
+        try {           
 
             body.billingAmount = Number(body.billingAmount);
-
-            console.log("REQUEST BILLING AMOUNT: " + request.billingAmount);
 
             var estatusCuenta = body.estatusCuenta;
 
@@ -155,19 +160,20 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 response.status(200).send(messageResponse);
             } else {
 
-                var nuevoSaldo = body.billingAmount - request.billingAmount;
-                var numero = Number(0);
+                console.log("SALDO NETSUITE: " + body.billingAmount);
+                console.log("BILLING AMOUNT ZIMBLE: : " + request.billingAmount);
+             
+                var nuevoSaldo = body.billingAmount - request.billingAmount;                
 
                 console.log("NUEVO SALDO: " + nuevoSaldo);
-                console.log(nuevoSaldo == numero ? "Uno" : "Dos");
+                console.log("CONVERSION SALDO: " + nuevoSaldo/10);
 
                 actualizarSaldo({idCustomer: 568, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, type: 'AUTH'});
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "OK";
-                messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo;
-                messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = nuevoSaldo;
-                messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                //response.status(200).send("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo.toString()
+                messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount.toString();
+                messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount.toString();
                 console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                 response.status(200).send(messageResponse);
             }
@@ -184,6 +190,13 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
     const startHrTime = process.hrtime();
 
     request = request.body;
+
+    var urlSettings2 = {
+        url: process.env.URL + "&acctNumber=" + request.accountNumber
+    }
+    
+    //create a link
+    var myInvoices2 = nsrestlet.createLink(accountSettings, urlSettings2);
 
     var messageResponse = {
         messageId: '',
@@ -211,7 +224,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
     console.log("ORIGINAL AMOUNT: " + request.originalTxnAmount);
     
     //then call get, post, put, or delete
-    myInvoices.get({type: 'REVERSAL'}, function(error, body)
+    myInvoices2.get({type: 'REVERSAL'}, function(error, body)
     {      
         try {
 
@@ -331,7 +344,7 @@ function actualizarSaldo(nuevoSaldo) {
     console.log("NUEVO SALDO: " + nuevoSaldo.newBalance);
 
     myInvoices.put(nuevoSaldo).then(function(body) {
-        console.log(body);
+        //console.log(body);
     })
     .catch(function(error) {
         console.log(error);
