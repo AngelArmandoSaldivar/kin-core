@@ -196,9 +196,9 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "OK";
-                messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo.toString();
-                messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount).toString();
-                messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount).toString();
+                messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
+                messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
                 console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                 console.log("==========FINAL A AUTH==============");
                 response.status(200).send(messageResponse);
@@ -372,9 +372,9 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
 
                     messageResponse.messageId = request.messageId;
                     messageResponse.validationResponse = "OK";
-                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo.toString();
-                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount.toString();
-                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount).toString();
+                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
+                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
                     console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                     console.log("==========FINAL A REVERSAL==============");
                     response.status(200).send(messageResponse);
