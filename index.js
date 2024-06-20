@@ -182,6 +182,18 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
                 actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, type: 'AUTH'});
 
+
+                if(request.billingCurrencyNode == 2) {                        
+                    nuevoSaldo = nuevoSaldo * 100;
+                }
+                if(request.billingCurrencyNode == 1) {
+                    nuevoSaldo = nuevoSaldo * 10;
+                }
+    
+                if(request.billingCurrencyNode == 0) {
+                    nuevoSaldo = nuevoSaldo * 1;
+                }
+
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "OK";
                 messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo.toFixed(2).toString()
@@ -270,6 +282,8 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
             if(request.billingCurrencyNode == 0) {
                 request.billingAmount = request.billingAmount / 1;
             }
+            
+
 
 
 
@@ -340,10 +354,22 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 var nuevoSaldo = body.billingAmount + request.billingAmount;
 
                 console.log("NUEVO SALDO: " + nuevoSaldo + "/////" + "Saldo: " + body.memoDebitAmount);
-                console.log(nuevoSaldo < body.memoDebitAmount ? "Si es menor": "No es menor");                
+                console.log(nuevoSaldo < body.memoDebitAmount ? "Si es menor": "No es menor");
 
                 if (nuevoSaldo <= body.memoDebitAmount) {
-                    actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo, type: 'REVERSAL'})
+                    actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo, type: 'REVERSAL'});
+
+                    if(request.billingCurrencyNode == 2) {                        
+                        nuevoSaldo = nuevoSaldo * 100;
+                    }
+                    if(request.billingCurrencyNode == 1) {
+                        nuevoSaldo = nuevoSaldo * 10;
+                    }
+        
+                    if(request.billingCurrencyNode == 0) {
+                        nuevoSaldo = nuevoSaldo * 1;
+                    }
+
                     messageResponse.messageId = request.messageId;
                     messageResponse.validationResponse = "OK";
                     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = nuevoSaldo.toFixed(2).toString();                    
