@@ -360,17 +360,18 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 console.log(nuevoSaldo < body.memoDebitAmount ? "Si es menor": "No es menor");
                 
                 if (request.reversalReason[0] == 'TIME_OUT') {
+                    console.log("ENTRASTE TIME OUT");
                     messageResponse.messageId = request.messageId;
                     messageResponse.validationResponse = "OK";
                     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount.toFixed(2).toString();
                     messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount.toFixed(2).toString();
                     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount.toString();
-                    console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                    console.log("==========FINAL A REVERSAL==============");
+                    // console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                    // console.log("==========FINAL A REVERSAL==============");
                     response.status(200).send(messageResponse);
                 }
                             
-                if (nuevoSaldo <= body.memoDebitAmount && request.reversalReason[0] != 'TIME_OUT') {
+                if (nuevoSaldo <= body.memoDebitAmount && request.reversalReason[0] != 'TIME_OUT') {                    
                     actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo, type: 'REVERSAL'});
 
                     if(request.billingCurrencyNode == 2) {                        
@@ -393,14 +394,16 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     console.log("==========FINAL A REVERSAL==============");
                     response.status(200).send(messageResponse);
                 } else {
-                    messageResponse.messageId = request.messageId;
-                    messageResponse.validationResponse = "OK";
-                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount.toFixed(2).toString();
-                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount.toFixed(2).toString();
-                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount.toString();
-                    console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                    console.log("==========FINAL A REVERSAL==============");
-                    response.status(200).send(messageResponse);               
+                    if (request.reversalReason[0] != 'TIME_OUT') {                    
+                        messageResponse.messageId = request.messageId;
+                        messageResponse.validationResponse = "OK";
+                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount.toFixed(2).toString();
+                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount.toFixed(2).toString();
+                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount.toString();
+                        console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                        console.log("==========FINAL A REVERSAL==============");
+                        response.status(200).send(messageResponse);               
+                    }
                 }                
             }
             
