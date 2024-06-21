@@ -194,7 +194,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
         
                     if(request.billingCurrencyNode == 0) {
                         nuevoSaldo = nuevoSaldo * 1;
-                    }
+                    }                    
 
                     messageResponse.messageId = request.messageId;
                     messageResponse.validationResponse = "OK";
@@ -359,40 +359,49 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 console.log("NUEVO SALDO: " + nuevoSaldo + "/////" + "Saldo: " + body.memoDebitAmount);
                 console.log(nuevoSaldo < body.memoDebitAmount ? "Si es menor": "No es menor");
                 
-                setTimeout(() => {
-                    if (nuevoSaldo <= body.memoDebitAmount) {
-                        actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo, type: 'REVERSAL'});
+                if (request.reversalReason[0] == 'TIME_OUT') {
+                    messageResponse.messageId = request.messageId;
+                    messageResponse.validationResponse = "OK";
+                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount.toFixed(2).toString();
+                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount.toFixed(2).toString();
+                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount.toString();
+                    console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                    console.log("==========FINAL A REVERSAL==============");
+                    response.status(200).send(messageResponse);
+                }
+                            
+                if (nuevoSaldo <= body.memoDebitAmount && request.reversalReason[0] != 'TIME_OUT') {
+                    actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo, type: 'REVERSAL'});
 
-                        if(request.billingCurrencyNode == 2) {                        
-                            nuevoSaldo = nuevoSaldo * 100;
-                        }
-                        if(request.billingCurrencyNode == 1) {
-                            nuevoSaldo = nuevoSaldo * 10;
-                        }
-            
-                        if(request.billingCurrencyNode == 0) {
-                            nuevoSaldo = nuevoSaldo * 1;
-                        }
-
-                        messageResponse.messageId = request.messageId;
-                        messageResponse.validationResponse = "OK";
-                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
-                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
-                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
-                        console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                        console.log("==========FINAL A REVERSAL==============");
-                        response.status(200).send(messageResponse);
-                    } else {
-                        messageResponse.messageId = request.messageId;
-                        messageResponse.validationResponse = "OK";
-                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount.toFixed(2).toString();
-                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount.toFixed(2).toString();
-                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount.toString();
-                        console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                        console.log("==========FINAL A REVERSAL==============");
-                        response.status(200).send(messageResponse);               
+                    if(request.billingCurrencyNode == 2) {                        
+                        nuevoSaldo = nuevoSaldo * 100;
                     }
-                }, 4000);
+                    if(request.billingCurrencyNode == 1) {
+                        nuevoSaldo = nuevoSaldo * 10;
+                    }
+        
+                    if(request.billingCurrencyNode == 0) {
+                        nuevoSaldo = nuevoSaldo * 1;
+                    }
+
+                    messageResponse.messageId = request.messageId;
+                    messageResponse.validationResponse = "OK";
+                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
+                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                    console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                    console.log("==========FINAL A REVERSAL==============");
+                    response.status(200).send(messageResponse);
+                } else {
+                    messageResponse.messageId = request.messageId;
+                    messageResponse.validationResponse = "OK";
+                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount.toFixed(2).toString();
+                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount.toFixed(2).toString();
+                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount.toString();
+                    console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                    console.log("==========FINAL A REVERSAL==============");
+                    response.status(200).send(messageResponse);               
+                }                
             }
             
         } catch (error) {
