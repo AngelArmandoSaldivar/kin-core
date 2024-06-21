@@ -173,6 +173,15 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 response.status(200).send(messageResponse);
             } else {
 
+
+                setTimeout(() => {
+                    response.status(200).send("Response Test");
+                    console.log("ENTRASTE DESPUES DE 4 SEGUNDOS");
+                }, 4000);
+                
+
+                return;
+
                 console.log("SALDO NETSUITE: " + body.billingAmount);
                 console.log("BILLING AMOUNT ZIMBLE: : " + request.billingAmount);                
 
@@ -200,7 +209,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
                 messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
                 console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                console.log("==========FINAL A AUTH==============");
+                console.log("==========FINAL A AUTH==============");                
                 response.status(200).send(messageResponse);
             }
             
@@ -350,6 +359,15 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
                 response.status(200).send(messageResponse);           
             } else {
+
+
+                setTimeout(() => {
+                    response.status(200).send("Response Test");
+                    console.log("ENTRASTE DESPUES DE 4 SEGUNDOS");
+                }, 4000);
+                
+                return;
+
                 console.log("BODY BILLING NETSUITE: " + body.billingAmount);
                 var nuevoSaldo = body.billingAmount + request.billingAmount;
 
