@@ -173,17 +173,16 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 response.status(200).send(messageResponse);
             } else {
 
-                setTimeout(() => {                                    
+                setTimeout(() => {
                 
                     console.log("SALDO NETSUITE: " + body.billingAmount);
-                    console.log("BILLING AMOUNT ZIMBLE: : " + request.billingAmount);                
+                    console.log("BILLING AMOUNT ZIMBLE: : " + request.billingAmount);
 
                     var nuevoSaldo = body.billingAmount - request.billingAmount;
 
                     console.log("NUEVO SALDO AUTH: " + nuevoSaldo);
 
                     actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, type: 'AUTH'});
-
 
                     if(request.billingCurrencyNode == 2) {                        
                         nuevoSaldo = nuevoSaldo * 100;
@@ -286,10 +285,6 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 request.billingAmount = request.billingAmount / 1;
             }
             
-
-
-
-
             console.log("REQUEST AMMOUNT: " + request.billingAmount);
 
             var estatusCuenta = body.estatusCuenta;
@@ -360,9 +355,10 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 console.log(nuevoSaldo < body.memoDebitAmount ? "Si es menor": "No es menor");
                 
                 if (request.reversalReason[0] == 'TIME_OUT') {
+                    console.log("ENTRASTE TIME OUT");
                     actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo, type: 'REVERSAL'});
 
-                    if(request.billingCurrencyNode == 2) {                        
+                    if(request.billingCurrencyNode == 2) {
                         nuevoSaldo = nuevoSaldo * 100;
                     }
                     if(request.billingCurrencyNode == 1) {
@@ -383,7 +379,8 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     response.status(200).send(messageResponse);
                 }
                             
-                if (nuevoSaldo <= body.memoDebitAmount && request.reversalReason[0] != 'TIME_OUT') {                    
+                if (nuevoSaldo <= body.memoDebitAmount && request.reversalReason[0] != 'TIME_OUT') {     
+                    console.log("ENTRASTE A DIFERENTE TIME OUT");
                     actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo, type: 'REVERSAL'});
 
                     if(request.billingCurrencyNode == 2) {                        
@@ -406,6 +403,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     console.log("==========FINAL A REVERSAL==============");
                     response.status(200).send(messageResponse);
                 } else {
+                    console.log("ENTRASTE A ELSE");
                     if (request.reversalReason[0] != 'TIME_OUT') {                    
                         messageResponse.messageId = request.messageId;
                         messageResponse.validationResponse = "OK";
