@@ -366,6 +366,20 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 console.log(nuevoSaldo < body.memoDebitAmount ? "Si es menor": "No es menor");
                 
                 if (request.reversalReason[0] == 'TIME_OUT') {
+
+                    console.log("ENTRASTE A TIME OUT");
+
+                    if(request.billingCurrencyNode == 2) {                        
+                        body.billingAmount = body.billingAmount * 100;
+                    }
+                    if(request.billingCurrencyNode == 1) {
+                        body.billingAmount = body.billingAmount * 10;
+                    }
+        
+                    if(request.billingCurrencyNode == 0) {
+                        body.billingAmount = body.billingAmount * 1;
+                    }
+
                     messageResponse.messageId = request.messageId;
                     messageResponse.validationResponse = "OK";
                     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
