@@ -171,50 +171,47 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 //messageResponse.validationResponse = "THE_BANK_REJECTED_THE_TRANSACTION_INSUFFICIENT_FUNDS";
                 messageResponse.validationResponse = "ACCT_LIMIT";
                 response.status(200).send(messageResponse);
-            } else {                
+            } else {
 
-                setTimeout(() => {
+            var nuevoSaldo = body.billingAmount - request.billingAmount;
 
-                    var nuevoSaldo = body.billingAmount - request.billingAmount;
-
-                    if(calculoTiempoRespuesta(startHrTime) > 3) {
-                        messageResponse.messageId = request.messageId;
-                        messageResponse.validationResponse = "OK";
-                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
-                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
-                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
-                        console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                        console.log("==========FINAL A AUTH==============");
-                        response.status(200).send(messageResponse);
-                    }
-                
-                    // console.log("SALDO NETSUITE: " + body.billingAmount);
-                    // console.log("BILLING AMOUNT ZIMBLE: : " + request.billingAmount);                    
-
-                    // console.log("NUEVO SALDO AUTH: " + nuevoSaldo);
-
-                    // actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, type: 'AUTH'});
-
-                    // if(request.billingCurrencyNode == 2) {                        
-                    //     nuevoSaldo = nuevoSaldo * 100;
-                    // }
-                    // if(request.billingCurrencyNode == 1) {
-                    //     nuevoSaldo = nuevoSaldo * 10;
-                    // }
+            if(calculoTiempoRespuesta(startHrTime) > 3) {
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "OK";
+                messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
+                messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                console.log("==========FINAL A AUTH==============");
+                response.status(200).send(messageResponse);
+            }
         
-                    // if(request.billingCurrencyNode == 0) {
-                    //     nuevoSaldo = nuevoSaldo * 1;
-                    // }                    
+            console.log("SALDO NETSUITE: " + body.billingAmount);
+            console.log("BILLING AMOUNT ZIMBLE: : " + request.billingAmount);                    
 
-                    // messageResponse.messageId = request.messageId;
-                    // messageResponse.validationResponse = "OK";
-                    // messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
-                    // messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
-                    // messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
-                    // console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                    // console.log("==========FINAL A AUTH==============");                
-                    // response.status(200).send(messageResponse);
-                }, 4000);
+            console.log("NUEVO SALDO AUTH: " + nuevoSaldo);
+
+            actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, type: 'AUTH'});
+
+            if(request.billingCurrencyNode == 2) {                        
+                nuevoSaldo = nuevoSaldo * 100;
+            }
+            if(request.billingCurrencyNode == 1) {
+                nuevoSaldo = nuevoSaldo * 10;
+            }
+
+            if(request.billingCurrencyNode == 0) {
+                nuevoSaldo = nuevoSaldo * 1;
+            }                    
+
+            messageResponse.messageId = request.messageId;
+            messageResponse.validationResponse = "OK";
+            messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
+            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+            messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+            console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+            console.log("==========FINAL A AUTH==============");                
+            response.status(200).send(messageResponse);                
             }
             
         } catch (error) {
@@ -415,7 +412,19 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     response.status(200).send(messageResponse);
                 } else {
                     console.log("ENTRASTE A ELSE");
-                    if (request.reversalReason[0] != 'TIME_OUT') {                    
+                    if (request.reversalReason[0] != 'TIME_OUT') {
+
+                        if(request.billingCurrencyNode == 2) {                        
+                            body.billingAmount = body.billingAmount * 100;
+                        }
+                        if(request.billingCurrencyNode == 1) {
+                            body.billingAmount = body.billingAmount * 10;
+                        }
+            
+                        if(request.billingCurrencyNode == 0) {
+                            body.billingAmount = body.billingAmount * 1;
+                        }
+                        
                         messageResponse.messageId = request.messageId;
                         messageResponse.validationResponse = "OK";
                         messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
@@ -487,7 +496,17 @@ app.post('/coreBanking/ADVICE', (request, response) => {
 
             var estatusCuenta = body.estatusCuenta;
 
-            return;
+            if(request.billingCurrencyNode == 2) {
+                console.log("ENTRASTE");
+                request.billingAmount = request.billingAmount / 100;
+            }
+            if(request.billingCurrencyNode == 1) {
+                request.billingAmount = request.billingAmount / 10;
+            }
+
+            if(request.billingCurrencyNode == 0) {
+                request.billingAmount = request.billingAmount / 1;
+            }
 
             if(estatusCuenta == "Bloqueada") {
                 messageResponse.messageId = request.messageId;
@@ -571,13 +590,26 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
                     response.status(200).send(messageResponse);
                 } else {
+
+                    if(request.billingCurrencyNode == 2) {                        
+                        body.billingAmount = body.billingAmount * 100;
+                    }
+                    if(request.billingCurrencyNode == 1) {
+                        body.billingAmount = body.billingAmount * 10;
+                    }
+        
+                    if(request.billingCurrencyNode == 0) {
+                        body.billingAmount = body.billingAmount * 1;
+                    }
+
                     messageResponse.messageId = request.messageId;
                     messageResponse.validationResponse = "OK";
-                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.billingAmount;
-                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                    response.status(200).send("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                    //response.status(200).send(messageResponse);
+                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
+                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                    console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                    console.log("==========FINAL A REVERSAL==============");
+                    response.status(200).send(messageResponse);
                 }
 
                 // console.log("NUEVO SALDO: " + nuevoSaldo);
