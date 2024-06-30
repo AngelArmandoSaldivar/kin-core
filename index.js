@@ -790,7 +790,7 @@ app.post('/coreBanking/ECHO', (request, response) => {
 app.get('/app/setTimeOut', (request, response) => {
     setTimeout(() => {
         response.send(true);
-    }, 10000);
+    }, 15000);
 });
 
 app.listen(process.env.PORT || 5000, () => {
