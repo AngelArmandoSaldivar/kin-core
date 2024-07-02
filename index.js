@@ -949,7 +949,7 @@ app.post('/app/setTimeOut', (request, response) => {
 app.get('/app/setTimeOut', (request, response) => {    
     setTimeout(() => {
         response.send(true);
-    }, 50000);
+    }, 55000);
 });
 
 app.listen(process.env.PORT || 5000, () => {
