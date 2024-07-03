@@ -525,7 +525,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     "billingAmount": 0
                 }
                    
-                if (request.messageSubType == 'AUTH_ONLY' && request.creditDebitFlag == 'D' && (request.messageTypeId == 'ADVICE' || request.messageTypeId == 'AUTH')) {
+                if (request.messageSubType == 'AUTH_ONLY' /*&& request.creditDebitFlag == 'D' && (request.messageTypeId == 'ADVICE' || request.messageTypeId == 'AUTH')*/) {
                     
                     var nuevoMemoDebitAmount = Number(body.memoDebitAmount) + request.billingAmount;
     
@@ -562,7 +562,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     console.log("==========FINAL A AUTH==============");                
                     response.status(200).send(messageResponse);
     
-                } else if(request.messageSubType == 'AUTH_ONLY' && request.creditDebitFlag == 'C' && (request.messageTypeId == 'ADVICE' || request.messageTypeId == 'AUTH')){
+                } else if(request.messageSubType == 'AUTH_ONLY' /*&& request.creditDebitFlag == 'C' && (request.messageTypeId == 'ADVICE' || request.messageTypeId == 'AUTH')*/){
                     var nuevoMemoCreditAmount = Number(body.memoCreditAmount) + request.billingAmount;
     
                     transaction.billingAmount = request.billingAmount;
