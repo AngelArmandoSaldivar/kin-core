@@ -574,7 +574,33 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                         response.status(200).send(messageResponse);
     
                     } else {
-                        response.send("Not found message id");
+                        
+                        if(request.billingCurrencyNode == 2) {
+                            body.billingAmount = body.billingAmount * 100;
+                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
+                            body.memoCreditAmount = body.memoCreditAmount * 100;
+                        }
+                        if(request.billingCurrencyNode == 1) {
+                            body.billingAmount = body.billingAmount * 10;
+                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
+                            body.memoCreditAmount = body.memoCreditAmount * 10;
+                        }
+    
+                        if(request.billingCurrencyNode == 0) {
+                            body.billingAmount = body.billingAmount * 1;
+                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
+                            body.memoCreditAmount = body.memoCreditAmount * 1;
+                        }
+            
+                        messageResponse.messageId = request.messageId;
+                        messageResponse.validationResponse = "OK";
+                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
+                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                        console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                        console.log("==========FINAL A AUTH==============");
+                        response.status(200).send(messageResponse);
+
                     }
                 }
                 /*else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'D' && request.originalMessageId != undefined) {
