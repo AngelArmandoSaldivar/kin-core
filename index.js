@@ -820,9 +820,18 @@ function actualizarSaldo(nuevoSaldo) {
 
 app.post('/coreBanking/ADVICE', (request, response) => {    
 
+    console.log("==========ENTRASTE A AUTH==============");
+    
     const startHrTime = process.hrtime();
 
-    request = request.body;   
+    request = request.body;
+
+    var urlSettings2 = {
+        url: process.env.URL + "&acctNumber=" + request.accountNumber
+    }
+    
+    //create a link
+    var myInvoices2 = nsrestlet.createLink(accountSettings, urlSettings2);
 
     var messageResponse = {
         messageId: '',
@@ -847,18 +856,18 @@ app.post('/coreBanking/ADVICE', (request, response) => {
         }
     }
 
-    myInvoices.get({type: 'REVERSAL'}, function(error, body)
+    myInvoices2.get({type: 'REVERSAL'}, function(error, body)
     {      
         try {
 
-            body.billingAmount = Number(body.billingAmount);
-            request.originalTxnAmount = Number(request.originalTxnAmount);
-            body.memoDebitAmount = Number(body.memoDebitAmount);
-
-            var estatusCuenta = body.estatusCuenta;
+            console.log("=======INICIIO REQUEST ADVICE========");
+            console.log("REQUEST AUTH: " + JSON.stringify(request));
+            console.log("=======FIN REQUEST ADVICE========");
+            
+            body.billingAmount = Number(body.billingAmount);            
+            request.billingAmount = Number(request.billingAmount);
 
             if(request.billingCurrencyNode == 2) {
-                console.log("ENTRASTE");
                 request.billingAmount = request.billingAmount / 100;
             }
             if(request.billingCurrencyNode == 1) {
@@ -869,59 +878,59 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                 request.billingAmount = request.billingAmount / 1;
             }
 
-            if(estatusCuenta == "Bloqueada") {
-                messageResponse.messageId = request.messageId;
-                messageResponse.validationResponse = "BLK";
-                messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-                messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
-                messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                messageResponse.serviceResponseFields.ACCT_BLOCK_CODE = 0;
-                response.status(200).send(messageResponse);
-            }
+            // if(estatusCuenta == "Bloqueada") {
+            //     messageResponse.messageId = request.messageId;
+            //     messageResponse.validationResponse = "BLK";
+            //     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+            //     messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+            //     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+            //     messageResponse.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+            //     response.status(200).send(messageResponse);
+            // }
 
-            if(estatusCuenta == "Pickup") {
-                messageResponse2.messageId = request.messageId;
-                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
-                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
-                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
-                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 2
-                response.status(200).send(messageResponse2);
-            }
+            // if(estatusCuenta == "Pickup") {
+            //     messageResponse2.messageId = request.messageId;
+            //     messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+            //     messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+            //     messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+            //     messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+            //     messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+            //     messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 2
+            //     response.status(200).send(messageResponse2);
+            // }
 
-            if(estatusCuenta == "Fraude") {
-                messageResponse2.messageId = request.messageId;
-                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
-                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
-                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
-                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 3;
-                response.status(200).send(messageResponse2);
-            }
+            // if(estatusCuenta == "Fraude") {
+            //     messageResponse2.messageId = request.messageId;
+            //     messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+            //     messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+            //     messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+            //     messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+            //     messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+            //     messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 3;
+            //     response.status(200).send(messageResponse2);
+            // }
 
-            if(estatusCuenta == "Sospecha Fraude") {
-                messageResponse2.messageId = request.messageId;
-                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
-                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
-                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
-                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 4;
-                response.status(200).send(messageResponse2);
-            }
+            // if(estatusCuenta == "Sospecha Fraude") {
+            //     messageResponse2.messageId = request.messageId;
+            //     messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+            //     messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+            //     messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+            //     messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+            //     messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+            //     messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 4;
+            //     response.status(200).send(messageResponse2);
+            // }
 
-             if(estatusCuenta == "Temporal") {
-                messageResponse2.messageId = request.messageId;
-                messageResponse2.validationResponse = "CORE_BANK_DECLINED";
-                messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-                messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
-                messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-                messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
-                messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 5
-                response.status(200).send(messageResponse2);
-            }
+            //  if(estatusCuenta == "Temporal") {
+            //     messageResponse2.messageId = request.messageId;
+            //     messageResponse2.validationResponse = "CORE_BANK_DECLINED";
+            //     messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+            //     messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+            //     messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+            //     messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
+            //     messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 5
+            //     response.status(200).send(messageResponse2);
+            // }
             
             if(request.financial_institution_id != body.financial_instituto_id) {
                 messageResponse.messageId = request.messageId;
