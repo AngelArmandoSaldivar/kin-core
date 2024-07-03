@@ -577,18 +577,18 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                         
                         if(request.billingCurrencyNode == 2) {
                             body.billingAmount = body.billingAmount * 100;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
+                            body.memoDebitAmount = body.memoDebitAmount * 100;
                             body.memoCreditAmount = body.memoCreditAmount * 100;
                         }
                         if(request.billingCurrencyNode == 1) {
                             body.billingAmount = body.billingAmount * 10;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
+                            body.memoDebitAmount = body.memoDebitAmount * 10;
                             body.memoCreditAmount = body.memoCreditAmount * 10;
                         }
     
                         if(request.billingCurrencyNode == 0) {
                             body.billingAmount = body.billingAmount * 1;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
+                            body.memoDebitAmount = body.memoDebitAmount * 1;
                             body.memoCreditAmount = body.memoCreditAmount * 1;
                         }
             
