@@ -604,7 +604,90 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
 
                     }
                 
-                } else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'D' && request.originalMessageId != undefined) {
+                } 
+
+                if (request.messageSubType == 'FINANCIAL' /*&& request.creditDebitFlag == 'D' && (request.messageTypeId == 'ADVICE' || request.messageTypeId == 'AUTH')*/) {
+                                        
+                    transaction.billingAmount = request.billingAmount;
+                    transaction.messageId = request.originalMessageId;
+                    var arrayTransactions = JSON.parse(body.transactions);
+
+                    console.log("ENTRASTE ADVICE ANGEL 2");
+    
+                    //Busqueda y eliminación
+    
+                    var foundItem = arrayTransactions.find(item => item.messageId === request.originalMessageId);
+    
+                    if(foundItem) {
+    
+                        arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);                    
+                        //var nuevoSaldo = Number(body.billingAmount) + Number(foundItem.billingAmount);
+                        if(foundItem.billingAmount != request.billingAmount) {
+
+                        }
+                        var nuevoMemoDebitAmount = Number(foundItem.billingAmount) != Number(request.billingAmoun) ? Number(body.memoDebitAmount) - Number(request.billingAmount) : Number(body.memoDebitAmount) - Number(foundItem.billingAmount);
+                        
+                        actualizarSaldo({idCustomer: body.idCustomer, newMemoDebit: nuevoMemoDebitAmount, newTransaction: JSON.stringify(arrayTransactions)});
+                        
+                        if(request.billingCurrencyNode == 2) {
+                            body.billingAmount = body.billingAmount * 100;
+                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
+                            body.memoCreditAmount = body.memoCreditAmount * 100;
+                        }
+                        if(request.billingCurrencyNode == 1) {
+                            body.billingAmount = body.billingAmount * 10;
+                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
+                            body.memoCreditAmount = body.memoCreditAmount * 10;
+                        }
+    
+                        if(request.billingCurrencyNode == 0) {
+                            body.billingAmount = body.billingAmount * 1;
+                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
+                            body.memoCreditAmount = body.memoCreditAmount * 1;
+                        }
+            
+                        messageResponse.messageId = request.messageId;
+                        messageResponse.validationResponse = "OK";
+                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
+                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
+                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                        console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                        console.log("==========FINAL A AUTH==============");
+                        response.status(200).send(messageResponse);
+    
+                    } else {
+                        
+                        if(request.billingCurrencyNode == 2) {
+                            body.billingAmount = body.billingAmount * 100;
+                            body.memoDebitAmount = body.memoDebitAmount * 100;
+                            body.memoCreditAmount = body.memoCreditAmount * 100;
+                        }
+                        if(request.billingCurrencyNode == 1) {
+                            body.billingAmount = body.billingAmount * 10;
+                            body.memoDebitAmount = body.memoDebitAmount * 10;
+                            body.memoCreditAmount = body.memoCreditAmount * 10;
+                        }
+    
+                        if(request.billingCurrencyNode == 0) {
+                            body.billingAmount = body.billingAmount * 1;
+                            body.memoDebitAmount = body.memoDebitAmount * 1;
+                            body.memoCreditAmount = body.memoCreditAmount * 1;
+                        }
+            
+                        messageResponse.messageId = request.messageId;
+                        messageResponse.validationResponse = "OK";
+                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
+                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                        console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                        console.log("==========FINAL A AUTH==============");
+                        response.status(200).send(messageResponse);
+
+                    }
+                
+                }
+                
+                /*else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'C' && request.originalMessageId != undefined) {
 
                     console.log("ENTRASTE FINANCIAL 1");
     
@@ -698,7 +781,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                     console.log("==========FINAL A AUTH==============");                
                     response.status(200).send(messageResponse);
-                }
+                }*/
 
                 /*else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'D' && request.originalMessageId != undefined) {
     
