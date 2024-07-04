@@ -543,7 +543,10 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
     
                         arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);                    
                         //var nuevoSaldo = Number(body.billingAmount) + Number(foundItem.billingAmount);
-                        var nuevoMemoDebitAmount = Number(body.memoDebitAmount) - Number(foundItem.billingAmount);
+                        if(foundItem.billingAmount != request.billingAmount) {
+
+                        }
+                        var nuevoMemoDebitAmount = Number(foundItem.billingAmount) != Number(request.billingAmoun) ? Number(body.memoDebitAmount) - Number(request.billingAmount) : Number(body.memoDebitAmount) - Number(foundItem.billingAmount);
                         
                         actualizarSaldo({idCustomer: body.idCustomer, newMemoDebit: nuevoMemoDebitAmount, newTransaction: JSON.stringify(arrayTransactions)});
                         
