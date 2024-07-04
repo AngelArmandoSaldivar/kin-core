@@ -604,7 +604,9 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
 
                     }
                 
-                } else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'C' && request.originalMessageId != undefined) {
+                } else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'D' && request.originalMessageId != undefined) {
+
+                    console.log("ENTRASTE FINANCIAL 1");
     
                 transaction.billingAmount = request.billingAmount;
                 transaction.messageId = request.originalMessageId;
@@ -657,7 +659,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     
                     messageResponse.messageId = request.messageId;
                     messageResponse.validationResponse = "OK";
-                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(request.billingAmoun);
+                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmoun);
                     messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
                     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
                     console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
