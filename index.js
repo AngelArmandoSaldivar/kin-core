@@ -831,7 +831,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                    
                 if (request.messageSubType == 'AUTH_ONLY' && request.creditDebitFlag == 'D') {
                     
-                    var nuevoMemoDebitAmount = Number(body.memoDebitAmount) + request.billingAmount;
+                    var nuevoMemoDebitAmount = Number(body.memoDebitAmount) - request.billingAmount;
     
                     transaction.billingAmount = request.billingAmount;
                     transaction.messageId = request.messageId;
@@ -867,7 +867,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                     response.status(200).send(messageResponse);
     
                 } else if(request.messageSubType == 'AUTH_ONLY' && request.creditDebitFlag == 'C'){
-                    var nuevoMemoCreditAmount = Number(body.memoCreditAmount) + request.billingAmount;
+                    var nuevoMemoCreditAmount = Number(body.memoCreditAmount) - request.billingAmount;
     
                     transaction.billingAmount = request.billingAmount;
                     transaction.messageId = request.messageId;
