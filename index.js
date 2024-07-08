@@ -460,9 +460,9 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     var arrayTransactions = JSON.parse(body.transactions);
     
                     //Busqueda y eliminación    
-                    var foundItem = arrayTransactions.find(item => item.messageId === request.originalMessageId);
+                    //var foundItem = arrayTransactions.find(item => item.messageId === request.originalMessageId);
     
-                    if(foundItem) {
+                    //if(foundItem) {
 
                         var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
                         
@@ -494,7 +494,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                         console.log("==========FINAL A AUTH==============");
                         response.status(200).send(messageResponse);
     
-                    } else {
+                    /*} else {
                         console.log("TRANSCTION " + request.originalMessageId + " NOT FOUND.");
                         if(request.billingCurrencyNode == 2) {
                             body.billingAmount = body.billingAmount * 100;
@@ -522,7 +522,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                         console.log("==========FINAL A AUTH==============");
                         response.status(200).send(messageResponse);
 
-                    }
+                    }*/
                 
                 }              
 
