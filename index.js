@@ -464,7 +464,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
     
                     //if(foundItem) {
 
-                        var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
+                        var nuevoSaldo = Number(body.billingAmount) + Number(request.billingAmount);
                         
                         actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo, newTransaction: JSON.stringify(arrayTransactions)});
                         
