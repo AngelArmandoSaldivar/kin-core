@@ -916,31 +916,31 @@ app.post('/coreBanking/ADVICE', (request, response) => {
     
                         //arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);                    
                         var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
-                        var nuevoMemoDebitAmount = Number(body.memoDebitAmount) - Number(request.billingAmount);
+                        //var nuevoMemoDebitAmount = Number(body.memoDebitAmount) - Number(request.billingAmount);
                         
-                        actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, newMemoDebit: nuevoMemoDebitAmount, newTransaction: JSON.stringify(arrayTransactions)});
+                        actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, newTransaction: JSON.stringify(arrayTransactions)});
                         
                         if(request.billingCurrencyNode == 2) {
                             nuevoSaldo = nuevoSaldo * 100;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
+                            body.memoDebitAmount = body.memoDebitAmount * 100;
                             body.memoCreditAmount = body.memoCreditAmount * 100;
                         }
                         if(request.billingCurrencyNode == 1) {
                             nuevoSaldo = nuevoSaldo * 10;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
+                            body.memoDebitAmount = body.memoDebitAmount * 10;
                             body.memoCreditAmount = body.memoCreditAmount * 10;
                         }
     
                         if(request.billingCurrencyNode == 0) {
                             nuevoSaldo = nuevoSaldo * 1;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
+                            body.memoDebitAmount = body.memoDebitAmount * 1;
                             body.memoCreditAmount = body.memoCreditAmount * 1;
                         }
             
                         messageResponse.messageId = request.messageId;
                         messageResponse.validationResponse = "OK";
                         messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
-                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
+                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
                         messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
                         console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                         console.log("==========FINAL A AUTH==============");                
@@ -971,32 +971,32 @@ app.post('/coreBanking/ADVICE', (request, response) => {
     
                         //arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);
                         var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
-                        var nuevoMemoCreditAmount = Number(body.memoCreditAmount) - Number(request.billingAmount);
+                        //var nuevoMemoCreditAmount = Number(body.memoCreditAmount) - Number(request.billingAmount);
     
-                        actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, newMemoCredit: nuevoMemoCreditAmount, newTransaction: JSON.stringify(arrayTransactions)});
+                        actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, newTransaction: JSON.stringify(arrayTransactions)});
                         
                         if(request.billingCurrencyNode == 2) {
                             nuevoSaldo = nuevoSaldo * 100;
                             body.memoDebitAmount = body.memoDebitAmount * 100;
-                            nuevoMemoCreditAmount = nuevoMemoCreditAmount * 100;
+                            body.memoCreditAmount = body.memoCreditAmount * 100;
                         }
                         if(request.billingCurrencyNode == 1) {
                             nuevoSaldo = nuevoSaldo * 10;
                             body.memoDebitAmount = body.memoDebitAmount * 10;
-                            nuevoMemoCreditAmount = nuevoMemoCreditAmount * 10;
+                            body.memoCreditAmount = body.memoCreditAmount * 10;
                         }
     
                         if(request.billingCurrencyNode == 0) {
                             nuevoSaldo = nuevoSaldo * 1;
                             body.memoDebitAmount = body.memoDebitAmount * 1;
-                            nuevoMemoCreditAmount = nuevoMemoCreditAmount * 1;
+                            body.memoCreditAmount = body.memoCreditAmount * 1;
                         }
             
                         messageResponse.messageId = request.messageId;
                         messageResponse.validationResponse = "OK";
                         messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
                         messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
-                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(nuevoMemoCreditAmount);
+                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
                         console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                         console.log("==========FINAL A AUTH==============");                
                         response.status(200).send(messageResponse);
