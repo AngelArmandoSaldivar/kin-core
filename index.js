@@ -910,9 +910,9 @@ app.post('/coreBanking/ADVICE', (request, response) => {
     
                     //Busqueda y eliminación
     
-                    var foundItem = arrayTransactions.find(item => item.messageId === request.originalMessageId);
+                    //var foundItem = arrayTransactions.find(item => item.messageId === request.originalMessageId);
     
-                    if(foundItem) {                    
+                    //if(foundItem) {                    
     
                         //arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);                    
                         var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
@@ -946,7 +946,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                         console.log("==========FINAL A AUTH==============");                
                         response.status(200).send(messageResponse);
     
-                    } else {
+                    /*} else {
                         messageResponse.messageId = request.messageId;
                         messageResponse.validationResponse = "OK";
                         messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(request.billingAmount);
@@ -955,7 +955,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                         console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                         console.log("==========FINAL A AUTH==============");                
                         response.status(200).send(messageResponse);
-                    }
+                    }*/
                     
                 } else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'C' /*&& request.originalMessageId != undefined*/) {
     
@@ -965,9 +965,9 @@ app.post('/coreBanking/ADVICE', (request, response) => {
     
                     //Busqueda y eliminación
     
-                    var foundItem = arrayTransactions.find(item => item.messageId === request.originalMessageId);
+                    //var foundItem = arrayTransactions.find(item => item.messageId === request.originalMessageId);
     
-                    if(foundItem) {                    
+                    //if(foundItem) {                    
     
                         //arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);
                         var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
@@ -1000,7 +1000,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                         console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                         console.log("==========FINAL A AUTH==============");                
                         response.status(200).send(messageResponse);
-                    } else {
+                    /*} else {
                         messageResponse.messageId = request.messageId;
                         messageResponse.validationResponse = "OK";
                         messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
@@ -1009,7 +1009,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                         console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                         console.log("==========FINAL A AUTH==============");                
                         response.status(200).send(messageResponse);
-                    }             
+                    }*/             
                 } 
                 /*else if(request.messageSubType == 'FINANCIAL' && request.originalMessageId == undefined && (request.creditDebitFlag == 'C' || request.creditDebitFlag == 'D')) {
                         
