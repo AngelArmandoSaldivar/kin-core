@@ -464,7 +464,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
     
                     if(foundItem) {
 
-                        var nuevoSaldo = Number(body.billingAmount) + Number(request.billingAmount);
+                        var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
                         
                         actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo, newTransaction: JSON.stringify(arrayTransactions)});
                         
@@ -538,7 +538,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
     
                     if(foundItem) {                        
                            
-                        var nuevoMemoCreditAmount = Number(foundItem.billingAmount) != Number(request.billingAmount) ? Number(body.memoCreditAmount) + Number(request.billingAmount) : Number(body.memoCreditAmount) + Number(foundItem.billingAmount);                        
+                        var nuevoMemoCreditAmount = Number(foundItem.billingAmount) != Number(request.billingAmount) ? Number(body.memoCreditAmount) - Number(request.billingAmount) : Number(body.memoCreditAmount) - Number(foundItem.billingAmount);                        
                         
                         actualizarSaldo({idCustomer: body.idCustomer, newMemoCredit: nuevoMemoCreditAmount, newTransaction: JSON.stringify(arrayTransactions)});
                         
@@ -612,7 +612,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
     
                     if(foundItem) {
                            
-                        var nuevoMemoDebit = Number(foundItem.billingAmount) != Number(request.billingAmount) ? Number(body.memoDebitAmount) + Number(request.billingAmount) : Number(body.memoDebitAmount) + Number(foundItem.billingAmount);
+                        var nuevoMemoDebit = Number(foundItem.billingAmount) != Number(request.billingAmount) ? Number(body.memoDebitAmount) - Number(request.billingAmount) : Number(body.memoDebitAmount) - Number(foundItem.billingAmount);
                         
                         actualizarSaldo({idCustomer: body.idCustomer, newMemoDebit: nuevoMemoDebit, newTransaction: JSON.stringify(arrayTransactions)});
                         
@@ -831,7 +831,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                    
                 if (request.messageSubType == 'AUTH_ONLY' && request.creditDebitFlag == 'D') {
                     
-                    var nuevoMemoDebitAmount = Number(body.memoDebitAmount) - request.billingAmount;
+                    var nuevoMemoDebitAmount = Number(body.memoDebitAmount) + request.billingAmount;
     
                     transaction.billingAmount = request.billingAmount;
                     transaction.messageId = request.messageId;
@@ -867,7 +867,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                     response.status(200).send(messageResponse);
     
                 } else if(request.messageSubType == 'AUTH_ONLY' && request.creditDebitFlag == 'C'){
-                    var nuevoMemoCreditAmount = Number(body.memoCreditAmount) - request.billingAmount;
+                    var nuevoMemoCreditAmount = Number(body.memoCreditAmount) + request.billingAmount;
     
                     transaction.billingAmount = request.billingAmount;
                     transaction.messageId = request.messageId;
