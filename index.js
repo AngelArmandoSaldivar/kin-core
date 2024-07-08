@@ -137,7 +137,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
             }
 
            
-            if (request.messageSubType == 'AUTH_ONLY' && request.creditDebitFlag == 'D' && (request.messageTypeId == 'ADVICE' || request.messageTypeId == 'AUTH')) {
+            if (request.messageSubType == 'AUTH_ONLY' && request.creditDebitFlag == 'D' /*&& (request.messageTypeId == 'ADVICE' || request.messageTypeId == 'AUTH')*/) {
                 
                 var nuevoMemoDebitAmount = Number(body.memoDebitAmount) + request.billingAmount;
 
@@ -174,7 +174,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 console.log("==========FINAL A AUTH==============");                
                 response.status(200).send(messageResponse);
 
-            } else if(request.messageSubType == 'AUTH_ONLY' && request.creditDebitFlag == 'C' && (request.messageTypeId == 'ADVICE' || request.messageTypeId == 'AUTH')){
+            } else if(request.messageSubType == 'AUTH_ONLY' && request.creditDebitFlag == 'C' /*&& (request.messageTypeId == 'ADVICE' || request.messageTypeId == 'AUTH')*/){
                 var nuevoMemoCreditAmount = Number(body.memoCreditAmount) + request.billingAmount;
 
                 transaction.billingAmount = request.billingAmount;
@@ -222,9 +222,9 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
                 if(foundItem) {                    
 
-                    arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);                    
-                    var nuevoSaldo = Number(body.billingAmount) - Number(foundItem.billingAmount);
-                    var nuevoMemoDebitAmount = Number(body.memoDebitAmount) - Number(foundItem.billingAmount);
+                    //arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);
+                    var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
+                    var nuevoMemoDebitAmount = Number(body.memoDebitAmount) - Number(request.billingAmount);
                     
                     actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, newMemoDebit: nuevoMemoDebitAmount, newTransaction: JSON.stringify(arrayTransactions)});
                     
@@ -270,9 +270,9 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
                 if(foundItem) {                    
 
-                    arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);
-                    var nuevoSaldo = Number(body.billingAmount) - Number(foundItem.billingAmount);
-                    var nuevoMemoCreditAmount = Number(body.memoCreditAmount) - Number(foundItem.billingAmount);
+                    //arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);
+                    var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
+                    var nuevoMemoCreditAmount = Number(body.memoCreditAmount) - Number(request.billingAmount);
 
                     actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, newMemoCredit: nuevoMemoCreditAmount, newTransaction: JSON.stringify(arrayTransactions)});
                     
@@ -304,7 +304,8 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 } else {
                     response.send("No se encuentra la transaccion")
                 }             
-            } else if(request.messageSubType == 'FINANCIAL' && request.originalMessageId == undefined && (request.creditDebitFlag == 'C' || request.creditDebitFlag == 'D')) {
+            } 
+            else if(request.messageSubType == 'FINANCIAL' && request.originalMessageId == undefined && (request.creditDebitFlag == 'C' || request.creditDebitFlag == 'D')) {
                     
                 var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);                
 
@@ -451,81 +452,8 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     "messageId": "",
                     "billingAmount": 0
                 }
-                   
-                if (request.messageSubType == 'AUTH_ONLY' /*&& request.creditDebitFlag == 'D' && (request.messageTypeId == 'ADVICE' || request.messageTypeId == 'AUTH')*/) {
-                                        
-                    transaction.billingAmount = request.billingAmount;
-                    transaction.messageId = request.originalMessageId;
-                    var arrayTransactions = JSON.parse(body.transactions);                    
-    
-                    //Busqueda y eliminación    
-                    var foundItem = arrayTransactions.find(item => item.messageId === request.originalMessageId);
-    
-                    if(foundItem) {
-                           
-                        var nuevoMemoDebitAmount = Number(foundItem.billingAmount) != Number(request.billingAmoun) ? Number(body.memoDebitAmount) + Number(request.billingAmount) : Number(body.memoDebitAmount) + Number(foundItem.billingAmount);
-                        
-                        actualizarSaldo({idCustomer: body.idCustomer, newMemoDebit: nuevoMemoDebitAmount, newTransaction: JSON.stringify(arrayTransactions)});
-                        
-                        if(request.billingCurrencyNode == 2) {
-                            body.billingAmount = body.billingAmount * 100;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
-                            body.memoCreditAmount = body.memoCreditAmount * 100;
-                        }
-                        if(request.billingCurrencyNode == 1) {
-                            body.billingAmount = body.billingAmount * 10;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
-                            body.memoCreditAmount = body.memoCreditAmount * 10;
-                        }
-    
-                        if(request.billingCurrencyNode == 0) {
-                            body.billingAmount = body.billingAmount * 1;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
-                            body.memoCreditAmount = body.memoCreditAmount * 1;
-                        }
-            
-                        messageResponse.messageId = request.messageId;
-                        messageResponse.validationResponse = "OK";
-                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
-                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
-                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
-                        console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                        console.log("==========FINAL A AUTH==============");
-                        response.status(200).send(messageResponse);
-    
-                    } else {
-                        
-                        if(request.billingCurrencyNode == 2) {
-                            body.billingAmount = body.billingAmount * 100;
-                            body.memoDebitAmount = body.memoDebitAmount * 100;
-                            body.memoCreditAmount = body.memoCreditAmount * 100;
-                        }
-                        if(request.billingCurrencyNode == 1) {
-                            body.billingAmount = body.billingAmount * 10;
-                            body.memoDebitAmount = body.memoDebitAmount * 10;
-                            body.memoCreditAmount = body.memoCreditAmount * 10;
-                        }
-    
-                        if(request.billingCurrencyNode == 0) {
-                            body.billingAmount = body.billingAmount * 1;
-                            body.memoDebitAmount = body.memoDebitAmount * 1;
-                            body.memoCreditAmount = body.memoCreditAmount * 1;
-                        }
-            
-                        messageResponse.messageId = request.messageId;
-                        messageResponse.validationResponse = "OK";
-                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
-                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
-                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
-                        console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                        console.log("==========FINAL A AUTH==============");
-                        response.status(200).send(messageResponse);
-
-                    }
-                
-                } 
-
-                if (request.messageSubType == 'FINANCIAL' /*&& request.creditDebitFlag == 'D' && (request.messageTypeId == 'ADVICE' || request.messageTypeId == 'AUTH')*/) {
+                                   
+                if (request.messageSubType == 'FINANCIAL') {
                                         
                     transaction.billingAmount = request.billingAmount;
                     transaction.messageId = request.originalMessageId;
@@ -536,38 +464,38 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
     
                     if(foundItem) {
 
-                        var nuevoMemoDebitAmount = Number(foundItem.billingAmount) != Number(request.billingAmoun) ? Number(body.memoDebitAmount) + Number(request.billingAmount) : Number(body.memoDebitAmount) + Number(foundItem.billingAmount);
+                        var nuevoSaldo = Number(body.billingAmount) + Number(request.billingAmount);
                         
-                        actualizarSaldo({idCustomer: body.idCustomer, newMemoDebit: nuevoMemoDebitAmount, newTransaction: JSON.stringify(arrayTransactions)});
+                        actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo, newTransaction: JSON.stringify(arrayTransactions)});
                         
                         if(request.billingCurrencyNode == 2) {
-                            body.billingAmount = body.billingAmount * 100;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
+                            body.memoDebitAmount = body.memoDebitAmount * 100;
+                            nuevoSaldo = nuevoSaldo * 100;
                             body.memoCreditAmount = body.memoCreditAmount * 100;
                         }
                         if(request.billingCurrencyNode == 1) {
-                            body.billingAmount = body.billingAmount * 10;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
+                            body.memoDebitAmount = body.memoDebitAmount * 10;
+                            nuevoSaldo = nuevoSaldo * 10;
                             body.memoCreditAmount = body.memoCreditAmount * 10;
                         }
     
                         if(request.billingCurrencyNode == 0) {
-                            body.billingAmount = body.billingAmount * 1;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
+                            body.memoDebitAmount = body.memoDebitAmount * 1;
+                            nuevoSaldo = nuevoSaldo * 1;
                             body.memoCreditAmount = body.memoCreditAmount * 1;
                         }
             
                         messageResponse.messageId = request.messageId;
                         messageResponse.validationResponse = "OK";
-                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
-                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
+                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
+                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
                         messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
                         console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                         console.log("==========FINAL A AUTH==============");
                         response.status(200).send(messageResponse);
     
                     } else {
-                        
+                        console.log("TRANSCTION " + request.originalMessageId + " NOT FOUND.");
                         if(request.billingCurrencyNode == 2) {
                             body.billingAmount = body.billingAmount * 100;
                             body.memoDebitAmount = body.memoDebitAmount * 100;
@@ -598,49 +526,50 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 
                 }              
 
-                if (request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'C' /*&& (request.messageTypeId == 'ADVICE' || request.messageTypeId == 'AUTH')*/) {
+                else if (request.messageSubType == 'AUTH_ONLY' && request.creditDebitFlag == 'C') {
                                         
                     transaction.billingAmount = request.billingAmount;
                     transaction.messageId = request.originalMessageId;
                     var arrayTransactions = JSON.parse(body.transactions);
-
-                    //Busqueda y eliminación
-    
+                  
                     var foundItem = arrayTransactions.find(item => item.messageId === request.originalMessageId);
+
+                    console.log("FOUND ITEM: " + JSON.stringify(foundItem));
     
-                    if(foundItem) {
+                    if(foundItem) {                        
                            
-                        var nuevoMemoCreditAmount = Number(foundItem.billingAmount) != Number(request.billingAmoun) ? Number(body.memoCreditAmount) + Number(request.memoCreditAmount) : Number(body.memoCreditAmount) - Number(foundItem.billingAmount);
+                        var nuevoMemoCreditAmount = Number(foundItem.billingAmount) != Number(request.billingAmount) ? Number(body.memoCreditAmount) + Number(request.billingAmount) : Number(body.memoCreditAmount) + Number(foundItem.billingAmount);                        
                         
                         actualizarSaldo({idCustomer: body.idCustomer, newMemoCredit: nuevoMemoCreditAmount, newTransaction: JSON.stringify(arrayTransactions)});
                         
                         if(request.billingCurrencyNode == 2) {
                             body.billingAmount = body.billingAmount * 100;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
-                            body.memoCreditAmount = body.memoCreditAmount * 100;
+                            nuevoMemoCreditAmount = nuevoMemoCreditAmount * 100;
+                            body.memoDebitAmount = body.memoDebitAmount * 100;
                         }
                         if(request.billingCurrencyNode == 1) {
                             body.billingAmount = body.billingAmount * 10;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
-                            body.memoCreditAmount = body.memoCreditAmount * 10;
+                            nuevoMemoCreditAmount = nuevoMemoCreditAmount * 10;
+                            body.memoDebitAmount = body.memoDebitAmount * 10;
                         }
     
                         if(request.billingCurrencyNode == 0) {
                             body.billingAmount = body.billingAmount * 1;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
-                            body.memoCreditAmount = body.memoCreditAmount * 1;
+                            nuevoMemoCreditAmount = nuevoMemoCreditAmount * 1;
+                            body.memoDebitAmount = body.memoDebitAmount * 1;
                         }
             
                         messageResponse.messageId = request.messageId;
                         messageResponse.validationResponse = "OK";
                         messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
-                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
-                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(nuevoMemoCreditAmount);
                         console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                         console.log("==========FINAL A AUTH==============");
                         response.status(200).send(messageResponse);
     
                     } else {
+                        console.log("NOT FOUND");
                         
                         if(request.billingCurrencyNode == 2) {
                             body.billingAmount = body.billingAmount * 100;
@@ -669,8 +598,9 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                         response.status(200).send(messageResponse);
 
                     }
+                }
                 
-                }if (request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'D' /*&& (request.messageTypeId == 'ADVICE' || request.messageTypeId == 'AUTH')*/) {
+                if (request.messageSubType == 'AUTH_ONLY' && request.creditDebitFlag == 'D' ) {
                                         
                     transaction.billingAmount = request.billingAmount;
                     transaction.messageId = request.originalMessageId;
@@ -682,31 +612,31 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
     
                     if(foundItem) {
                            
-                        var nuevoMemoDebit = Number(foundItem.billingAmount) != Number(request.billingAmoun) ? Number(body.memoCreditAmount) + Number(request.memoCreditAmount) : Number(body.memoCreditAmount) - Number(foundItem.billingAmount);
+                        var nuevoMemoDebit = Number(foundItem.billingAmount) != Number(request.billingAmount) ? Number(body.memoDebitAmount) + Number(request.billingAmount) : Number(body.memoDebitAmount) + Number(foundItem.billingAmount);
                         
                         actualizarSaldo({idCustomer: body.idCustomer, newMemoDebit: nuevoMemoDebit, newTransaction: JSON.stringify(arrayTransactions)});
                         
                         if(request.billingCurrencyNode == 2) {
                             body.billingAmount = body.billingAmount * 100;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
+                            nuevoMemoDebit = nuevoMemoDebit * 100;
                             body.memoCreditAmount = body.memoCreditAmount * 100;
                         }
                         if(request.billingCurrencyNode == 1) {
                             body.billingAmount = body.billingAmount * 10;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
+                            nuevoMemoDebit = nuevoMemoDebit * 10;
                             body.memoCreditAmount = body.memoCreditAmount * 10;
                         }
     
                         if(request.billingCurrencyNode == 0) {
                             body.billingAmount = body.billingAmount * 1;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
+                            nuevoMemoDebit = nuevoMemoDebit * 1;
                             body.memoCreditAmount = body.memoCreditAmount * 1;
                         }
             
                         messageResponse.messageId = request.messageId;
                         messageResponse.validationResponse = "OK";
                         messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
-                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
+                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebit);
                         messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
                         console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                         console.log("==========FINAL A AUTH==============");
@@ -743,225 +673,7 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                     }
                 
                 }
-                
-                /*else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'C' && request.originalMessageId != undefined) {
 
-                    console.log("ENTRASTE FINANCIAL 1");
-    
-                transaction.billingAmount = request.billingAmount;
-                transaction.messageId = request.originalMessageId;
-                var arrayTransactions = JSON.parse(body.transactions);
-
-                //Busqueda y eliminación
-
-                var foundItem = arrayTransactions.find(item => item.messageId === request.originalMessageId);
-
-                if(foundItem) {                    
-
-                    arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);
-                    var nuevoSaldo = Number(body.billingAmount) + Number(foundItem.billingAmount);
-                    var nuevoMemoCreditAmount = Number(body.memoCreditAmount) - Number(foundItem.billingAmount);
-
-                    actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, newMemoCredit: nuevoMemoCreditAmount, newTransaction: JSON.stringify(arrayTransactions)});
-                    
-                    if(request.billingCurrencyNode == 2) {
-                        request.billingAmoun = request.billingAmoun * 100;
-                        nuevoSaldo = nuevoSaldo * 100;
-                        body.memoDebitAmount = body.memoDebitAmount * 100;
-                        nuevoMemoCreditAmount = nuevoMemoCreditAmount * 100;
-                        body.memoCreditAmount = body.memoCreditAmount * 100;
-                    }
-                    if(request.billingCurrencyNode == 1) {
-                        request.billingAmoun = request.billingAmoun * 10;
-                        nuevoSaldo = nuevoSaldo * 10;
-                        body.memoDebitAmount = body.memoDebitAmount * 10;
-                        nuevoMemoCreditAmount = nuevoMemoCreditAmount * 10;
-                        body.memoCreditAmount = body.memoCreditAmount * 10;
-                    }
-
-                    if(request.billingCurrencyNode == 0) {
-                        request.billingAmoun = request.billingAmoun * 1;
-                        nuevoSaldo = nuevoSaldo * 1;
-                        body.memoDebitAmount = body.memoDebitAmount * 1;
-                        nuevoMemoCreditAmount = nuevoMemoCreditAmount * 1;
-                        body.memoCreditAmount = body.memoCreditAmount * 1;
-                    }
-        
-                    messageResponse.messageId = request.messageId;
-                    messageResponse.validationResponse = "OK";
-                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
-                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
-                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(nuevoMemoCreditAmount);
-                    console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                    console.log("==========FINAL A AUTH==============");                
-                    response.status(200).send(messageResponse);
-                } else {
-                    
-                    messageResponse.messageId = request.messageId;
-                    messageResponse.validationResponse = "OK";
-                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmoun);
-                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
-                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
-                    console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                    console.log("==========FINAL A AUTH==============");                
-                    response.status(200).send(messageResponse);
-
-                }             
-                } else if(request.messageSubType == 'FINANCIAL' && request.originalMessageId == undefined && (request.creditDebitFlag == 'C' || request.creditDebitFlag == 'D')) {
-                    
-                    var nuevoSaldo = Number(body.billingAmount) + Number(request.billingAmount);                
-
-                    actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo});
-                    
-                    if(request.billingCurrencyNode == 2) {
-                        nuevoSaldo = nuevoSaldo * 100;
-                        body.memoDebitAmount = body.memoDebitAmount * 100;
-                        nuevoMemoCreditAmount = nuevoMemoCreditAmount * 100;
-                    }
-                    if(request.billingCurrencyNode == 1) {
-                        nuevoSaldo = nuevoSaldo * 10;
-                        body.memoDebitAmount = body.memoDebitAmount * 10;
-                        nuevoMemoCreditAmount = nuevoMemoCreditAmount * 10;
-                    }
-
-                    if(request.billingCurrencyNode == 0) {
-                        nuevoSaldo = nuevoSaldo * 1;
-                        body.memoDebitAmount = body.memoDebitAmount * 1;
-                        nuevoMemoCreditAmount = nuevoMemoCreditAmount * 1;
-                    }
-        
-                    messageResponse.messageId = request.messageId;
-                    messageResponse.validationResponse = "OK";
-                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
-                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
-                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
-                    console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                    console.log("==========FINAL A AUTH==============");                
-                    response.status(200).send(messageResponse);
-                }*/
-
-                /*else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'D' && request.originalMessageId != undefined) {
-    
-                    transaction.billingAmount = request.billingAmount;
-                    transaction.messageId = request.originalMessageId;
-                    var arrayTransactions = JSON.parse(body.transactions);
-    
-                    //Busqueda y eliminación
-    
-                    var foundItem = arrayTransactions.find(item => item.messageId === request.originalMessageId);
-    
-                    if(foundItem) {                    
-    
-                        arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);                    
-                        var nuevoSaldo = Number(body.billingAmount) + Number(foundItem.billingAmount);
-                        var nuevoMemoDebitAmount = Number(body.memoDebitAmount) - Number(foundItem.billingAmount);
-                        
-                        actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, newMemoDebit: nuevoMemoDebitAmount, newTransaction: JSON.stringify(arrayTransactions)});
-                        
-                        if(request.billingCurrencyNode == 2) {
-                            nuevoSaldo = nuevoSaldo * 100;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
-                            body.memoCreditAmount = body.memoCreditAmount * 100;
-                        }
-                        if(request.billingCurrencyNode == 1) {
-                            nuevoSaldo = nuevoSaldo * 10;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
-                            body.memoCreditAmount = body.memoCreditAmount * 10;
-                        }
-    
-                        if(request.billingCurrencyNode == 0) {
-                            nuevoSaldo = nuevoSaldo * 1;
-                            nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
-                            body.memoCreditAmount = body.memoCreditAmount * 1;
-                        }
-            
-                        messageResponse.messageId = request.messageId;
-                        messageResponse.validationResponse = "OK";
-                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
-                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
-                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
-                        console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                        console.log("==========FINAL A AUTH==============");                
-                        response.status(200).send(messageResponse);
-    
-                    } else {
-                        response.send("No existe");
-                    }*/                                   
-                
-                
-                // var nuevoSaldo = body.billingAmount + request.billingAmount;
-                
-                // if (request.reversalReason[0] == 'TIME_OUT') {
-
-                //     console.log("ENTRASTE A TIME OUT");
-
-                //     if(request.billingCurrencyNode == 2) {                        
-                //         body.billingAmount = body.billingAmount * 100;
-                //     }
-                //     if(request.billingCurrencyNode == 1) {
-                //         body.billingAmount = body.billingAmount * 10;
-                //     }
-        
-                //     if(request.billingCurrencyNode == 0) {
-                //         body.billingAmount = body.billingAmount * 1;
-                //     }
-
-                //     messageResponse.messageId = request.messageId;
-                //     messageResponse.validationResponse = "OK";
-                //     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
-                //     messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
-                //     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
-                //     console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                //     console.log("==========FINAL A REVERSAL==============");
-                //     response.status(200).send(messageResponse);
-                // }
-                            
-                // if (nuevoSaldo <= body.memoDebitAmount && request.reversalReason[0] != 'TIME_OUT') {     
-                    
-                //     actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo, type: 'REVERSAL'});
-
-                //     if(request.billingCurrencyNode == 2) {                        
-                //         nuevoSaldo = nuevoSaldo * 100;
-                //     }
-                //     if(request.billingCurrencyNode == 1) {
-                //         nuevoSaldo = nuevoSaldo * 10;
-                //     }
-        
-                //     if(request.billingCurrencyNode == 0) {
-                //         nuevoSaldo = nuevoSaldo * 1;
-                //     }
-
-                //     messageResponse.messageId = request.messageId;
-                //     messageResponse.validationResponse = "OK";
-                //     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
-                //     messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
-                //     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);                   
-                //     response.status(200).send(messageResponse);
-                // } else {
-                //     console.log("ENTRASTE A ELSE");
-                //     if (request.reversalReason[0] != 'TIME_OUT') {
-
-                //         if(request.billingCurrencyNode == 2) {                        
-                //             body.billingAmount = body.billingAmount * 100;
-                //         }
-                //         if(request.billingCurrencyNode == 1) {
-                //             body.billingAmount = body.billingAmount * 10;
-                //         }
-            
-                //         if(request.billingCurrencyNode == 0) {
-                //             body.billingAmount = body.billingAmount * 1;
-                //         }
-                        
-                //         messageResponse.messageId = request.messageId;
-                //         messageResponse.validationResponse = "OK";
-                //         messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
-                //         messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
-                //         messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
-                //         console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                //         console.log("==========FINAL A REVERSAL==============");
-                //         response.status(200).send(messageResponse);               
-                //     }
-                // }                
             }
             
         } catch (error) {
@@ -1190,7 +902,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                     console.log("==========FINAL A AUTH==============");                
                     response.status(200).send(messageResponse);
     
-                } else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'D' && request.originalMessageId != undefined) {
+                } else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'D'/* && request.originalMessageId != undefined*/) {
     
                     transaction.billingAmount = request.billingAmount;
                     transaction.messageId = request.originalMessageId;
@@ -1202,9 +914,9 @@ app.post('/coreBanking/ADVICE', (request, response) => {
     
                     if(foundItem) {                    
     
-                        arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);                    
-                        var nuevoSaldo = Number(body.billingAmount) - Number(foundItem.billingAmount);
-                        var nuevoMemoDebitAmount = Number(body.memoDebitAmount) - Number(foundItem.billingAmount);
+                        //arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);                    
+                        var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
+                        var nuevoMemoDebitAmount = Number(body.memoDebitAmount) - Number(request.billingAmount);
                         
                         actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, newMemoDebit: nuevoMemoDebitAmount, newTransaction: JSON.stringify(arrayTransactions)});
                         
@@ -1235,10 +947,17 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                         response.status(200).send(messageResponse);
     
                     } else {
-                        response.send("No existe");
+                        messageResponse.messageId = request.messageId;
+                        messageResponse.validationResponse = "OK";
+                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(request.billingAmount);
+                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(request.memoDebitAmount);
+                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                        console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                        console.log("==========FINAL A AUTH==============");                
+                        response.status(200).send(messageResponse);
                     }
                     
-                } else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'C' && request.originalMessageId != undefined) {
+                } else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'C' /*&& request.originalMessageId != undefined*/) {
     
                     transaction.billingAmount = request.billingAmount;
                     transaction.messageId = request.originalMessageId;
@@ -1250,9 +969,9 @@ app.post('/coreBanking/ADVICE', (request, response) => {
     
                     if(foundItem) {                    
     
-                        arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);
-                        var nuevoSaldo = Number(body.billingAmount) - Number(foundItem.billingAmount);
-                        var nuevoMemoCreditAmount = Number(body.memoCreditAmount) - Number(foundItem.billingAmount);
+                        //arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);
+                        var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
+                        var nuevoMemoCreditAmount = Number(body.memoCreditAmount) - Number(request.billingAmount);
     
                         actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, newMemoCredit: nuevoMemoCreditAmount, newTransaction: JSON.stringify(arrayTransactions)});
                         
@@ -1282,9 +1001,17 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                         console.log("==========FINAL A AUTH==============");                
                         response.status(200).send(messageResponse);
                     } else {
-                        response.send("No se encuentra la transaccion")
+                        messageResponse.messageId = request.messageId;
+                        messageResponse.validationResponse = "OK";
+                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
+                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                        console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                        console.log("==========FINAL A AUTH==============");                
+                        response.status(200).send(messageResponse);
                     }             
-                } else if(request.messageSubType == 'FINANCIAL' && request.originalMessageId == undefined && (request.creditDebitFlag == 'C' || request.creditDebitFlag == 'D')) {
+                } 
+                /*else if(request.messageSubType == 'FINANCIAL' && request.originalMessageId == undefined && (request.creditDebitFlag == 'C' || request.creditDebitFlag == 'D')) {
                         
                     var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);                
     
@@ -1315,7 +1042,7 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                     console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                     console.log("==========FINAL A AUTH==============");                
                     response.status(200).send(messageResponse);
-                }
+                }*/
                      
             }
             
