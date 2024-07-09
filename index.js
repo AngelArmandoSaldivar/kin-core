@@ -454,6 +454,8 @@ app.post('/coreBanking/REVERSAL', (request, response) => {
                 }
                                    
                 if (request.messageSubType == 'FINANCIAL') {
+
+                    console.log("ENTRASTE REVERSAL");
                                         
                     transaction.billingAmount = request.billingAmount;
                     transaction.messageId = request.originalMessageId;
