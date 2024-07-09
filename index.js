@@ -109,7 +109,24 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 messageResponse.serviceResponseFields.ACCT_BLOCK_CODE = 1;
                 response.status(200).send(messageResponse);
             // } else if(request.billingAmount > body.billingAmount) {
-            } else if(request.billingAmount > body.billingAmount) {                
+            } else if(request.billingAmount > body.billingAmount) {
+                if(request.billingCurrencyNode == 2) {
+                    body.billingAmount = body.billingAmount * 100;
+                    body.memoDebitAmount = body.memoDebitAmount * 100;
+                    body.memoCreditAmount = body.memoCreditAmount * 100;
+                }
+                if(request.billingCurrencyNode == 1) {
+                    body.billingAmount = body.billingAmount * 10;
+                    body.memoDebitAmount = body.memoDebitAmount * 10;
+                    body.memoCreditAmount = body.memoCreditAmount * 10;
+                }
+
+                if(request.billingCurrencyNode == 0) {
+                    body.billingAmount = body.billingAmount * 1;
+                    body.memoDebitAmount = body.memoDebitAmount * 1;
+                    body.memoCreditAmount = body.memoCreditAmount * 1;
+                }
+
                 messageResponse.messageId = request.messageId;
                 messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
                 messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
