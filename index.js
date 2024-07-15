@@ -127,7 +127,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
                 messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
                 messageResponse.serviceResponseFields.ACCT_BLOCK_CODE = 1;
                 response.status(200).send(messageResponse);
-            } else if(request.accountNumber != body.accountNumber) {                
+            } else if(request.accountNumber != body.accountNumber) {
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "CORE_BANK_DECLINED";
                 messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
@@ -164,7 +164,8 @@ app.post('/coreBanking/AUTH', (request, response) => {
                   
             var transaction = {
                 "messageId": "",
-                "billingAmount": 0
+                "billingAmount": 0,
+                "authResponse": '00'
             }
 
            
@@ -747,61 +748,9 @@ app.post('/coreBanking/ADVICE', (request, response) => {
             if(request.billingCurrencyNode == 0) {
                 request.billingAmount = request.billingAmount / 1;
             }
-
-            // if(estatusCuenta == "Bloqueada") {
-            //     messageResponse.messageId = request.messageId;
-            //     messageResponse.validationResponse = "BLK";
-            //     messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-            //     messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
-            //     messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-            //     messageResponse.serviceResponseFields.ACCT_BLOCK_CODE = 0;
-            //     response.status(200).send(messageResponse);
-            // }
-
-            // if(estatusCuenta == "Pickup") {
-            //     messageResponse2.messageId = request.messageId;
-            //     messageResponse2.validationResponse = "CORE_BANK_DECLINED";
-            //     messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-            //     messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
-            //     messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-            //     messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
-            //     messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 2
-            //     response.status(200).send(messageResponse2);
-            // }
-
-            // if(estatusCuenta == "Fraude") {
-            //     messageResponse2.messageId = request.messageId;
-            //     messageResponse2.validationResponse = "CORE_BANK_DECLINED";
-            //     messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-            //     messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
-            //     messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-            //     messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
-            //     messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 3;
-            //     response.status(200).send(messageResponse2);
-            // }
-
-            // if(estatusCuenta == "Sospecha Fraude") {
-            //     messageResponse2.messageId = request.messageId;
-            //     messageResponse2.validationResponse = "CORE_BANK_DECLINED";
-            //     messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-            //     messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
-            //     messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-            //     messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
-            //     messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 4;
-            //     response.status(200).send(messageResponse2);
-            // }
-
-            //  if(estatusCuenta == "Temporal") {
-            //     messageResponse2.messageId = request.messageId;
-            //     messageResponse2.validationResponse = "CORE_BANK_DECLINED";
-            //     messageResponse2.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
-            //     messageResponse2.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
-            //     messageResponse2.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
-            //     messageResponse2.serviceResponseFields.ACCT_BLOCK_CODE = 0;
-            //     messageResponse2.serviceResponseFields.CORE_BANK_DEC_REASON_CODE = 5
-            //     response.status(200).send(messageResponse2);
-            // }
             
+
+
             if(request.financial_institution_id != body.financial_instituto_id) {
                 messageResponse.messageId = request.messageId;
                 messageResponse.validationResponse = "CORE_BANK_DECLINED";
@@ -1040,6 +989,305 @@ app.post('/coreBanking/ADVICE', (request, response) => {
                      
             }
             
+        } catch (error) {
+            response.status(400).send("Error " + error);
+        }         
+        
+    });
+    
+});
+
+app.post('/coreBanking/REVADV', (request, response) => {    
+
+    console.log("==========ENTRASTE A REVADV==============");
+    
+    const startHrTime = process.hrtime();
+
+    request = request.body;
+
+    var urlSettings2 = {
+        url: process.env.URL + "&acctNumber=" + request.accountNumber
+    }
+    
+    //create a link
+    var myInvoices2 = nsrestlet.createLink(accountSettings, urlSettings2);
+
+    var messageResponse = {
+        messageId: '',
+        validationResponse:'',
+        serviceResponseFields: {
+            ACCOUNT_BALANCE: 0,
+            MEMO_DEBIT_AMOUNT: 0,
+            MEMO_CREDIT_AMOUNT: 0,
+            ACCT_BLOCK_CODE: 0
+        }
+    }
+    
+    myInvoices2.get({type: 'REVADV'}, function(error, body)
+    {      
+        try {
+
+            console.log("=======INICIIO REQUEST REVADV========");
+            console.log("REQUEST AUTH: " + JSON.stringify(request));
+            console.log("=======FIN REQUEST REVADV========");
+            
+            body.billingAmount = Number(body.billingAmount);            
+            request.billingAmount = Number(request.billingAmount);
+
+            if(request.billingCurrencyNode == 2) {
+                request.billingAmount = request.billingAmount / 100;
+            }
+            if(request.billingCurrencyNode == 1) {
+                request.billingAmount = request.billingAmount / 10;
+            }
+
+            if(request.billingCurrencyNode == 0) {
+                request.billingAmount = request.billingAmount / 1;
+            }
+            
+            
+
+            if(request.financial_institution_id != body.financial_instituto_id) {
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                response.status(200).send(messageResponse);
+            } else if(request.accountNumber != body.accountNumber) {
+                messageResponse.messageId = request.messageId;
+                messageResponse.validationResponse = "CORE_BANK_DECLINED";
+                messageResponse.serviceResponseFields.ACCOUNT_BALANCE = body.billingAmount;
+                messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = body.memoDebitAmount;
+                messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = body.memoCreditAmount;
+                response.status(200).send(messageResponse);
+            } else {                
+
+                var transaction = {
+                    "messageId": "",
+                    "billingAmount": 0
+                }
+                
+                if(request.messageSubType == 'AUTH_ONLY' && request.creditDebitFlag == 'D') {
+
+                    var arrayTransactions = JSON.parse(body.transactions);
+
+                    var authResponse2 = {
+                        authResponse: ''
+                    }
+
+                    if(request.authResponse == '00') {
+
+                        arrayTransactions.forEach(element => {
+                            if(element.authResponse == '00') {
+                                authResponse2.authResponse =  element.authResponse;
+                            }else if(element.authResponse == '05'){
+                                authResponse2.authResponse = '05';
+                            } else {
+                                authResponse2.authResponse = '';
+                            }
+                        });                                                            
+                        
+                        if(authResponse2.authResponse == '00') {
+                            if(request.billingCurrencyNode == 2) {
+                                body.billingAmount = body.billingAmount * 100;
+                                body.memoCreditAmount = body.memoCreditAmount * 100;
+                                body.memoDebitAmount = body.memoDebitAmount * 100;
+                            }
+                            if(request.billingCurrencyNode == 1) {
+                                body.billingAmount = body.billingAmount * 10;
+                                body.memoCreditAmount = body.memoCreditAmount * 10;
+                                body.memoDebitAmount = body.memoDebitAmount * 10;
+                            }
+                
+                            if(request.billingCurrencyNode == 0) {
+                                body.billingAmount = body.billingAmount * 1;
+                                body.memoCreditAmount = body.memoCreditAmount * 1;
+                                body.memoDebitAmount = body.memoDebitAmount * 1;
+                            }  
+                            messageResponse.messageId = request.messageId;
+                            messageResponse.validationResponse = "OK";
+                            messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
+                            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                            messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                            console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                            console.log("==========FINAL A AUTH==============");                
+                            response.status(200).send(messageResponse);
+                        } else if(authResponse2.authResponse == '05'){
+                            var nuevoMemoDebitAmount = Number(body.memoDebitAmount) + request.billingAmount;
+        
+                            transaction.billingAmount = request.billingAmount;
+                            transaction.messageId = request.messageId;
+                            var arrayTransactions = JSON.parse(body.transactions);
+                            arrayTransactions.push(transaction);
+                        
+                            actualizarSaldo({idCustomer: body.idCustomer, newMemoDebit: nuevoMemoDebitAmount, newTransaction: JSON.stringify(arrayTransactions)});
+            
+                            if(request.billingCurrencyNode == 2) {
+                                body.billingAmount = body.billingAmount * 100;
+                                body.memoCreditAmount = body.memoCreditAmount * 100;
+                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
+                            }
+                            if(request.billingCurrencyNode == 1) {
+                                body.billingAmount = body.billingAmount * 10;
+                                body.memoCreditAmount = body.memoCreditAmount * 10;
+                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
+                            }
+                
+                            if(request.billingCurrencyNode == 0) {
+                                body.billingAmount = body.billingAmount * 1;
+                                body.memoCreditAmount = body.memoCreditAmount * 1;
+                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
+                            }  
+            
+                            messageResponse.messageId = request.messageId;
+                            messageResponse.validationResponse = "OK";
+                            messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
+                            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
+                            messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                            console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                            console.log("==========FINAL A AUTH==============");                
+                            response.status(200).send(messageResponse);
+                        } else if(authResponse2.authResponse == '') {
+                            var nuevoMemoDebitAmount = Number(body.memoDebitAmount) + request.billingAmount;
+        
+                            transaction.billingAmount = request.billingAmount;
+                            transaction.messageId = request.messageId;
+                            var arrayTransactions = JSON.parse(body.transactions);
+                            arrayTransactions.push(transaction);
+                        
+                            actualizarSaldo({idCustomer: body.idCustomer, newMemoDebit: nuevoMemoDebitAmount, newTransaction: JSON.stringify(arrayTransactions)});
+            
+                            if(request.billingCurrencyNode == 2) {
+                                body.billingAmount = body.billingAmount * 100;
+                                body.memoCreditAmount = body.memoCreditAmount * 100;
+                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
+                            }
+                            if(request.billingCurrencyNode == 1) {
+                                body.billingAmount = body.billingAmount * 10;
+                                body.memoCreditAmount = body.memoCreditAmount * 10;
+                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
+                            }
+                
+                            if(request.billingCurrencyNode == 0) {
+                                body.billingAmount = body.billingAmount * 1;
+                                body.memoCreditAmount = body.memoCreditAmount * 1;
+                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
+                            }  
+            
+                            messageResponse.messageId = request.messageId;
+                            messageResponse.validationResponse = "OK";
+                            messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
+                            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
+                            messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                            console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                            console.log("==========FINAL A AUTH==============");                
+                            response.status(200).send(messageResponse);
+                        }
+                    } else {
+                        arrayTransactions.forEach(element => {
+                            if(element.authResponse == '00') {
+                                authResponse2.authResponse =  element.authResponse;
+                            }else if(element.authResponse == '05'){
+                                authResponse2.authResponse = '05';
+                            } else {
+                                authResponse2.authResponse = '';
+                            }
+                        });                                                            
+                        
+                        if(authResponse2.authResponse == '00') {
+                            var nuevoMemoDebitAmount = Number(body.memoDebitAmount) + request.billingAmount;
+        
+                            transaction.billingAmount = request.billingAmount;
+                            transaction.messageId = request.messageId;
+                            var arrayTransactions = JSON.parse(body.transactions);
+                            arrayTransactions.push(transaction);
+                        
+                            actualizarSaldo({idCustomer: body.idCustomer, newMemoDebit: nuevoMemoDebitAmount, newTransaction: JSON.stringify(arrayTransactions)});
+            
+                            if(request.billingCurrencyNode == 2) {
+                                body.billingAmount = body.billingAmount * 100;
+                                body.memoCreditAmount = body.memoCreditAmount * 100;
+                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
+                            }
+                            if(request.billingCurrencyNode == 1) {
+                                body.billingAmount = body.billingAmount * 10;
+                                body.memoCreditAmount = body.memoCreditAmount * 10;
+                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
+                            }
+                
+                            if(request.billingCurrencyNode == 0) {
+                                body.billingAmount = body.billingAmount * 1;
+                                body.memoCreditAmount = body.memoCreditAmount * 1;
+                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
+                            }  
+            
+                            messageResponse.messageId = request.messageId;
+                            messageResponse.validationResponse = "OK";
+                            messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
+                            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
+                            messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                            console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                            console.log("==========FINAL A AUTH==============");                
+                            response.status(200).send(messageResponse);
+                        } else if(authResponse2.authResponse == '05') {
+                            if(request.billingCurrencyNode == 2) {
+                                body.billingAmount = body.billingAmount * 100;
+                                body.memoCreditAmount = body.memoCreditAmount * 100;
+                                body.memoDebitAmount = body.memoDebitAmount * 100;
+                            }
+                            if(request.billingCurrencyNode == 1) {
+                                body.billingAmount = body.billingAmount * 10;
+                                body.memoCreditAmount = body.memoCreditAmount * 10;
+                                body.memoDebitAmount = body.memoDebitAmount * 10;
+                            }
+                
+                            if(request.billingCurrencyNode == 0) {
+                                body.billingAmount = body.billingAmount * 1;
+                                body.memoCreditAmount = body.memoCreditAmount * 1;
+                                body.memoDebitAmount = body.memoDebitAmount * 1;
+                            }  
+            
+                            messageResponse.messageId = request.messageId;
+                            messageResponse.validationResponse = "OK";
+                            messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
+                            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                            messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                            console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                            console.log("==========FINAL A AUTH==============");                
+                            response.status(200).send(messageResponse);
+                        } else if(authResponse2.authResponse == '') {
+                            if(request.billingCurrencyNode == 2) {
+                                body.billingAmount = body.billingAmount * 100;
+                                body.memoCreditAmount = body.memoCreditAmount * 100;
+                                body.memoDebitAmount = body.memoDebitAmount * 100;
+                            }
+                            if(request.billingCurrencyNode == 1) {
+                                body.billingAmount = body.billingAmount * 10;
+                                body.memoCreditAmount = body.memoCreditAmount * 10;
+                                body.memoDebitAmount = body.memoDebitAmount * 10;
+                            }
+                
+                            if(request.billingCurrencyNode == 0) {
+                                body.billingAmount = body.billingAmount * 1;
+                                body.memoCreditAmount = body.memoCreditAmount * 1;
+                                body.memoDebitAmount = body.memoDebitAmount * 1;
+                            }  
+            
+                            messageResponse.messageId = request.messageId;
+                            messageResponse.validationResponse = "OK";
+                            messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
+                            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                            messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                            console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                            console.log("==========FINAL A AUTH==============");                
+                            response.status(200).send(messageResponse);
+                        }
+                    }
+
+                }
+                                  
+            }
         } catch (error) {
             response.status(400).send("Error " + error);
         }         
