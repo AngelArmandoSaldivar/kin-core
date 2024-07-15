@@ -1378,18 +1378,18 @@ app.post('/coreBanking/REVADV', (request, response) => {
                             
                             if(request.billingCurrencyNode == 2) {
                                 nuevoSaldo = nuevoSaldo * 100;
-                                body.memoDebitAmount = body.memoDebitAmoun * 100;
+                                body.memoDebitAmount = body.memoDebitAmount * 100;
                                 body.memoCreditAmount = body.memoCreditAmount * 100;
                             }
                             if(request.billingCurrencyNode == 1) {
                                 nuevoSaldo = nuevoSaldo * 10;
-                                body.memoDebitAmoun = body.memoDebitAmoun * 10;
+                                body.memoDebitAmount = body.memoDebitAmount * 10;
                                 body.memoCreditAmount = body.memoCreditAmount * 10;
                             }
 
                             if(request.billingCurrencyNode == 0) {
                                 nuevoSaldo = nuevoSaldo * 1;
-                                body.memoDebitAmoun = body.memoDebitAmoun * 1;
+                                body.memoDebitAmount = body.memoDebitAmount * 1;
                                 body.memoCreditAmount = body.memoCreditAmount * 1;
                             }
                 
