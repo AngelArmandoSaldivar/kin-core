@@ -1404,6 +1404,43 @@ app.post('/coreBanking/REVADV', (request, response) => {
                             console.log("==========FINAL A AUTH==============");                
                             response.status(200).send(messageResponse);
                         }
+                    } else if(request.authResponse == '05'){
+                    
+                        var nuevoBalance = Number(body.billingAmount) + request.billingAmount;
+        
+                            transaction.billingAmount = request.billingAmount;
+                            transaction.messageId = request.messageId;
+                            var arrayTransactions = JSON.parse(body.transactions);
+                            arrayTransactions.push(transaction);
+                        
+                            actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoBalance, newTransaction: JSON.stringify(arrayTransactions)});
+            
+                            if(request.billingCurrencyNode == 2) {
+                                nuevoBalance = nuevoBalance * 100;
+                                body.memoCreditAmount = body.memoCreditAmount * 100;
+                                body.memoDebitAmount = body.memoDebitAmount * 100;
+                            }
+                            if(request.billingCurrencyNode == 1) {
+                                nuevoBalance = nuevoBalance * 10;
+                                body.memoCreditAmount = body.memoCreditAmount * 10;
+                                body.memoDebitAmount = body.memoDebitAmount * 10;
+                            }
+                
+                            if(request.billingCurrencyNode == 0) {
+                                nuevoBalance = nuevoBalance * 1;
+                                body.memoCreditAmount = body.memoCreditAmount * 1;
+                                body.memoDebitAmount = body.memoDebitAmount * 1;
+                            }  
+            
+                            messageResponse.messageId = request.messageId;
+                            messageResponse.validationResponse = "OK";
+                            messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoBalance);
+                            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                            messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                            console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                            console.log("==========FINAL A AUTH==============");                
+                            response.status(200).send(messageResponse);
+
                     } else {
                         arrayTransactions.forEach(element => {
                             if(element.authResponse == '00') {
