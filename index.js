@@ -44,11 +44,7 @@ app.get("/kin/api/v1/echoMessage", (request, response) => {
     response.send("Message Test");
 });
 
-app.post('/coreBanking/AUTH', (request, response) => {
-
-    setTimeout(() => {
-        
-    }, timeout);
+app.post('/coreBanking/AUTH', (request, response) => {   
     
     const startHrTime = process.hrtime();
 
@@ -280,7 +276,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
                         nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
                         body.memoCreditAmount = body.memoCreditAmount * 1;
                     }
-        
+
                     setTimeout(() => {
                         messageResponse.messageId = request.messageId;
                         messageResponse.validationResponse = "OK";
@@ -290,7 +286,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
                         console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                         console.log("==========FINAL A AUTH==============");                
                         response.status(200).send(messageResponse);
-                    }, 200000);                    
+                    }, 200000);                           
 
                 /*} else {
                     response.send("No existe");
