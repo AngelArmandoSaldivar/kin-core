@@ -1378,25 +1378,25 @@ app.post('/coreBanking/REVADV', (request, response) => {
                             
                             if(request.billingCurrencyNode == 2) {
                                 nuevoSaldo = nuevoSaldo * 100;
-                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
+                                body.memoDebitAmount = body.memoDebitAmoun * 100;
                                 body.memoCreditAmount = body.memoCreditAmount * 100;
                             }
                             if(request.billingCurrencyNode == 1) {
                                 nuevoSaldo = nuevoSaldo * 10;
-                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
+                                body.memoDebitAmoun = body.memoDebitAmoun * 10;
                                 body.memoCreditAmount = body.memoCreditAmount * 10;
                             }
 
                             if(request.billingCurrencyNode == 0) {
                                 nuevoSaldo = nuevoSaldo * 1;
-                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
+                                body.memoDebitAmoun = body.memoDebitAmoun * 1;
                                 body.memoCreditAmount = body.memoCreditAmount * 1;
                             }
                 
                             messageResponse.messageId = request.messageId;
                             messageResponse.validationResponse = "OK";
                             messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
-                            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
+                            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmoun);
                             messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
                             console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                             console.log("==========FINAL A AUTH==============");                
