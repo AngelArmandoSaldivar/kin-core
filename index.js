@@ -1305,30 +1305,38 @@ app.post('/coreBanking/REVADV', (request, response) => {
                         });                                                            
                         
                         if(authResponse2.authResponse == '00') {
+                            
+                            var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
+                            var nuevoMemoDebitAmount = Number(body.memoDebitAmount) - Number(request.billingAmount);
+                            
+                            actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, newMemoDebit: nuevoMemoDebitAmount, newTransaction: JSON.stringify(arrayTransactions)});
+                            
                             if(request.billingCurrencyNode == 2) {
-                                body.billingAmount = body.billingAmount * 100;
+                                nuevoSaldo = nuevoSaldo * 100;
+                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 100;
                                 body.memoCreditAmount = body.memoCreditAmount * 100;
-                                body.memoDebitAmount = body.memoDebitAmount * 100;
                             }
                             if(request.billingCurrencyNode == 1) {
-                                body.billingAmount = body.billingAmount * 10;
+                                nuevoSaldo = nuevoSaldo * 10;
+                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 10;
                                 body.memoCreditAmount = body.memoCreditAmount * 10;
-                                body.memoDebitAmount = body.memoDebitAmount * 10;
+                            }
+
+                            if(request.billingCurrencyNode == 0) {
+                                nuevoSaldo = nuevoSaldo * 1;
+                                nuevoMemoDebitAmount = nuevoMemoDebitAmount * 1;
+                                body.memoCreditAmount = body.memoCreditAmount * 1;
                             }
                 
-                            if(request.billingCurrencyNode == 0) {
-                                body.billingAmount = body.billingAmount * 1;
-                                body.memoCreditAmount = body.memoCreditAmount * 1;
-                                body.memoDebitAmount = body.memoDebitAmount * 1;
-                            }  
                             messageResponse.messageId = request.messageId;
                             messageResponse.validationResponse = "OK";
-                            messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(body.billingAmount);
-                            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
+                            messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
+                            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
                             messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
                             console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                             console.log("==========FINAL A AUTH==============");                
                             response.status(200).send(messageResponse);
+
                         } else if(authResponse2.authResponse == '05'){
                             var nuevoMemoDebitAmount = Number(body.memoDebitAmount) + request.billingAmount;
         
