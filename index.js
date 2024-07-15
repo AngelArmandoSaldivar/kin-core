@@ -44,7 +44,11 @@ app.get("/kin/api/v1/echoMessage", (request, response) => {
     response.send("Message Test");
 });
 
-app.post('/coreBanking/AUTH', (request, response) => { 
+app.post('/coreBanking/AUTH', (request, response) => {
+
+    setTimeout(() => {
+        
+    }, timeout);
     
     const startHrTime = process.hrtime();
 
@@ -252,7 +256,7 @@ app.post('/coreBanking/AUTH', (request, response) => {
 
                 var foundItem = arrayTransactions.find(item => item.messageId === request.originalMessageId);
 
-                if(foundItem) {                    
+                //if(foundItem) {                    
 
                     //arrayTransactions = arrayTransactions.filter(item => item.messageId !== request.originalMessageId);
                     var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
@@ -277,18 +281,20 @@ app.post('/coreBanking/AUTH', (request, response) => {
                         body.memoCreditAmount = body.memoCreditAmount * 1;
                     }
         
-                    messageResponse.messageId = request.messageId;
-                    messageResponse.validationResponse = "OK";
-                    messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
-                    messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
-                    messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
-                    console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
-                    console.log("==========FINAL A AUTH==============");                
-                    response.status(200).send(messageResponse);
+                    setTimeout(() => {
+                        messageResponse.messageId = request.messageId;
+                        messageResponse.validationResponse = "OK";
+                        messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
+                        messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(nuevoMemoDebitAmount);
+                        messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
+                        console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
+                        console.log("==========FINAL A AUTH==============");                
+                        response.status(200).send(messageResponse);
+                    }, 200000);                    
 
-                } else {
+                /*} else {
                     response.send("No existe");
-                }
+                }*/
                 
             } else if(request.messageSubType == 'FINANCIAL' && request.creditDebitFlag == 'C' && request.originalMessageId != undefined) {
 
