@@ -1396,7 +1396,7 @@ app.post('/coreBanking/REVADV', (request, response) => {
                             messageResponse.messageId = request.messageId;
                             messageResponse.validationResponse = "OK";
                             messageResponse.serviceResponseFields.ACCOUNT_BALANCE = Number(nuevoSaldo);
-                            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmoun);
+                            messageResponse.serviceResponseFields.MEMO_DEBIT_AMOUNT = Number(body.memoDebitAmount);
                             messageResponse.serviceResponseFields.MEMO_CREDIT_AMOUNT = Number(body.memoCreditAmount);
                             console.log("Response Time " + calculoTiempoRespuesta(startHrTime) + 'ms');
                             console.log("==========FINAL A AUTH==============");                
