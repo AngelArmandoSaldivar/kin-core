@@ -1306,10 +1306,9 @@ app.post('/coreBanking/REVADV', (request, response) => {
                         
                         if(authResponse2.authResponse == '00') {
                             
-                            var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);
-                            var nuevoMemoDebitAmount = Number(body.memoDebitAmount) - Number(request.billingAmount);
+                            var nuevoSaldo = Number(body.billingAmount) - Number(request.billingAmount);                            
                             
-                            actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, newMemoDebit: nuevoMemoDebitAmount, newTransaction: JSON.stringify(arrayTransactions)});
+                            actualizarSaldo({idCustomer: body.idCustomer, newBalance: nuevoSaldo == 0 ? 0.01 : nuevoSaldo, newTransaction: JSON.stringify(arrayTransactions)});
                             
                             if(request.billingCurrencyNode == 2) {
                                 nuevoSaldo = nuevoSaldo * 100;
