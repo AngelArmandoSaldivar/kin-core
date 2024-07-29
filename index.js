@@ -1,11 +1,18 @@
 const express = require('express');
 const app = express()
-app.use(express.json());
+const bodyParser = require('body-parser');
+app.use(express.json({limit:'50mb'}));
+app.use(bodyParser.json());
 app.use(express.urlencoded({extended: true}));
 const port = process.env.PORT || 5000;
 require('dotenv').config();
 const nsrestlet = require('nsrestlet');
-
+const axios = require('axios');
+const fs = require('fs');
+const archiver = require('archiver');
+const { Buffer } = require('buffer');
+const JSZip = require('jszip')
+const path = require('path');
 //app.use(cors());
 
 var accountSettings = {
@@ -1575,6 +1582,43 @@ app.get('/app/setTimeOut', (request, response) => {
         response.send(true);
     }, 55000);
 });
+
+app.post('/generateZip/v1', (request, response) => {
+
+    createZipFromBase64Images(request.body)
+    .then(zipBase64 => {
+        //console.log('Archivo .zip en base64:', zipBase64);        
+        response.status(200).send({"statusCode": 200, "body": {"estatus": "Procesado"}});
+    })
+    .catch(err => {
+        console.error('Error:', err);
+    });      
+})
+
+async function createZipFromBase64Images(base64Images) {
+    const zip = new JSZip();    
+
+    base64Images.map(item => {       
+        const buffer = Buffer.from(item.data, 'base64');
+        zip.file(item.filename, buffer);
+    }); 
+
+    // Generar el archivo zip
+    const zipContent = await zip.generateAsync({ type: 'nodebuffer' });    
+    const outputZipPath = path.join(__dirname, 'output', 'files.zip');
+
+    // Crear la carpeta de salida si no existe
+    if (!fs.existsSync(path.dirname(outputZipPath))) {
+        fs.mkdirSync(path.dirname(outputZipPath), { recursive: true });
+    }
+
+    fs.writeFileSync(outputZipPath, zipContent);
+
+    // Convertir el archivo zip a base64
+    const zipBase64 = zipContent.toString('base64');
+    
+    return zipBase64;
+}
 
 app.listen(process.env.PORT || 5000, () => {
     console.log(`App listening on port ${port}`);
