@@ -1588,7 +1588,7 @@ app.post('/generateZip/v1', (request, response) => {
     createZipFromBase64Images(request.body)
     .then(zipBase64 => {
         //console.log('Archivo .zip en base64:', zipBase64);        
-        response.status(200).send({"statusCode": 200, "body": {"estatus": "Procesado"}});
+        response.status(200).send({"statusCode": 200, "body": {"base64": zipBase64}});
     })
     .catch(err => {
         console.error('Error:', err);
