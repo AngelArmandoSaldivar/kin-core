@@ -1602,9 +1602,7 @@ app.post('/validateDocuments/v1', (request, response) => {
     const axios = require('axios');
     // let data = JSON.stringify({
     //     "uuid": body.uuid
-    // });
-
-    console.log("BODY: " + JSON.stringify(body));    
+    // });    
 
     let config = {
         method: 'get',
