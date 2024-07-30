@@ -1613,7 +1613,7 @@ app.post('/validateDocuments/v1', (request, response) => {
         headers: { 
             'Content-type': 'application/json'
         },
-        data : data
+        data : request
     };
 
 
