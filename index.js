@@ -1597,15 +1597,15 @@ app.post('/generateZip/v1', (request, response) => {
 
 app.post('/validateDocuments/v1', (request, response) => {
     
-    var body = request.body;
+    var body = request;
 
     const axios = require('axios');
     // let data = JSON.stringify({
     //     "uuid": body.uuid
     // });
 
-    console.log("BODY: " + JSON.stringify(request.body));
-    let data = request.body;
+    console.log("BODY: " + JSON.parse(body));
+    let data = JSON.parse(body);
 
     let config = {
         method: 'get',
