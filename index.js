@@ -1597,7 +1597,7 @@ app.post('/generateZip/v1', (request, response) => {
 
 app.post('/validateDocuments/v1', (request, response) => {
 
-    console.log("REQUEST: " + body);
+    console.log("REQUEST: " + request);
 
     var body = request.body;
 
