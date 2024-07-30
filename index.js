@@ -1604,7 +1604,7 @@ app.post('/validateDocuments/v1', (request, response) => {
     //     "uuid": body.uuid
     // });
 
-    console.log("BODY: " + request.body);
+    console.log("BODY: " + JSON.stringify(request.body));
     let data = request.body;
 
     let config = {
