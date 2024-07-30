@@ -1599,7 +1599,7 @@ app.post('/validateDocuments/v1', (request, response) => {
 
     var body = request.body;
 
-    console.log("BODY: " + body);
+    console.log("BODY: " + body.uuid);
 
     const axios = require('axios');
     let data = JSON.stringify({
@@ -1620,7 +1620,7 @@ app.post('/validateDocuments/v1', (request, response) => {
     try {
         const res = await axios.request(config);
         var parseJson = JSON.stringify(res.data);
-        var respDoc = JSON.parse(parseJson);        
+        var respDoc = JSON.parse(parseJson);
         if(respDoc.body.estatus != 'Procesado' && respDoc.body.resultado != 'Procesado') {
             //console.log("ENTRASTE 1");
             response.send(respDoc);
