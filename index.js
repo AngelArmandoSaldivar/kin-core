@@ -1592,8 +1592,41 @@ app.post('/generateZip/v1', (request, response) => {
     })
     .catch(err => {
         console.error('Error:', err);
-    });      
-})
+    });
+});
+
+app.get('/validateDocuments/v1', (request, response) => {
+
+    var body = request.body;    
+
+    const axios = require('axios');
+    let data = JSON.stringify({
+        "uuid": body.uuid
+    });
+
+    let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'https://pb7isqlfp4.execute-api.us-east-1.amazonaws.com/Produccion/resultadogenerado',
+        headers: { 
+            'Content-type': 'application/json'
+        },
+        data : data
+    };
+
+    async function makeRequest() {
+    try {
+        const res = await axios.request(config);
+        var parseJson = JSON.stringify(res.data);
+        response.send(JSON.parse(parseJson));
+    }
+    catch (error) {
+        console.log(error);
+    }
+    }
+    makeRequest();
+    
+});
 
 async function createZipFromBase64Images(base64Images) {
     const zip = new JSZip();    
