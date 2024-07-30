@@ -1599,7 +1599,7 @@ app.post('/validateDocuments/v1', (request, response) => {
 
     var body = request.body;
 
-    console.log("BODY: " + JSON.stringify(body.uuid));
+    console.log("BODY: " + JSON.stringify(body));
 
     const axios = require('axios');
     let data = JSON.stringify({
