@@ -1596,17 +1596,16 @@ app.post('/generateZip/v1', (request, response) => {
 });
 
 app.post('/validateDocuments/v1', (request, response) => {
-
-    console.log("REQUEST: " + JSON.stringify(request));
-
+    
     var body = request.body;
 
-    console.log("BODY: " + JSON.stringify(body));
-
     const axios = require('axios');
-    let data = JSON.stringify({
-        "uuid": body.uuid
-    });
+    // let data = JSON.stringify({
+    //     "uuid": body.uuid
+    // });
+
+    console.log("BODY: " + request.body);
+    let data = request.body;
 
     let config = {
         method: 'get',
@@ -1617,6 +1616,8 @@ app.post('/validateDocuments/v1', (request, response) => {
         },
         data : data
     };
+
+
 
     async function makeRequest() {
     try {
