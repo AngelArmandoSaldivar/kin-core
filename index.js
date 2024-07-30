@@ -1597,7 +1597,7 @@ app.post('/generateZip/v1', (request, response) => {
 
 app.post('/validateDocuments/v1', (request, response) => {
 
-    var body = request.body;    
+    var body = request.body;
 
     const axios = require('axios');
     let data = JSON.stringify({
@@ -1618,7 +1618,14 @@ app.post('/validateDocuments/v1', (request, response) => {
     try {
         const res = await axios.request(config);
         var parseJson = JSON.stringify(res.data);
-        response.send(JSON.parse(parseJson));
+        var respDoc = JSON.parse(parseJson);
+        console.log("ESTATUS: " + respDoc.statusCode);
+        if(respDoc.body.estatus != 'Procesado' && respDoc.body.resultado != 'Procesado') {
+            //console.log("ENTRASTE 1");
+            response.send(respDoc);
+        } else {
+            response.send(respDoc);
+        }        
     }
     catch (error) {
         console.log(error);
