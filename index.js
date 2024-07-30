@@ -1596,13 +1596,13 @@ app.post('/generateZip/v1', (request, response) => {
 });
 
 app.post('/validateDocuments/v1', (request, response) => {
-    
-    var body = request;
+
+    var body = request.body;
 
     const axios = require('axios');
-    // let data = JSON.stringify({
-    //     "uuid": body.uuid
-    // });    
+    let data = JSON.stringify({
+        "uuid": body.uuid
+    });
 
     let config = {
         method: 'get',
@@ -1611,16 +1611,14 @@ app.post('/validateDocuments/v1', (request, response) => {
         headers: { 
             'Content-type': 'application/json'
         },
-        data : request
+        data : data
     };
-
-
 
     async function makeRequest() {
     try {
         const res = await axios.request(config);
         var parseJson = JSON.stringify(res.data);
-        var respDoc = JSON.parse(parseJson);
+        var respDoc = JSON.parse(parseJson);        
         if(respDoc.body.estatus != 'Procesado' && respDoc.body.resultado != 'Procesado') {
             //console.log("ENTRASTE 1");
             response.send(respDoc);
