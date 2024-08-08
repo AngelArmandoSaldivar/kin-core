@@ -1659,6 +1659,26 @@ async function createZipFromBase64Images(base64Images) {
     return zipBase64;
 }
 
+app.get('/cronSuma/v1', (request, response) => {
+    
+});
+
+app.post('/app/verificacion', (request, response) => {
+        
+    myInvoices.post(request.body).then(function(body) {
+        response.send(body);
+    })
+    .catch(function(error) {
+        console.log("ERROR: " + JSON.stringify(error));
+    });
+});
+
+app.get('/app/timeOut', (request, response) => {
+    setTimeout(() => {
+        response.send(true);
+    }, 6000);
+});
+
 app.listen(process.env.PORT || 5000, () => {
     console.log(`App listening on port ${port}`);
 });
